@@ -18,8 +18,14 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
+app.post("/login", (req, res) => {
+  console.log("logger ut her", req.body);
+  const { email, password } = req.body;
+  res.status("200").json("OK");
+});
+
 app.get("/guides", (req, res) => {
-  res.render("login");
+  res.render("guides");
 });
 
 app.listen(process.env.PORT);
