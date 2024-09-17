@@ -24,6 +24,10 @@ app.post("/login", (req, res) => {
   res.status("200").json("OK");
 });
 
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 app.get("/guides", (req, res) => {
   res.render("guides");
 });

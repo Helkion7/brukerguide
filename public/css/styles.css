@@ -428,3 +428,67 @@ main {
     width: 50%;
   }
 }
+
+/* Login */
+
+.loginSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.loginContainer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login {
+  background-color: var(--secondaryColor);
+  padding: 40px;
+  border-radius: var(--borderRadius);
+  box-shadow: var(--primaryBoxShadow);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login h2 {
+  color: var(--secondaryColorReverse);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.login input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--secondaryColorReverse);
+  border-radius: calc(var(--borderRadius) / 2);
+  background-color: var(--primaryColor);
+  color: var(--secondaryColorReverse);
+  transition: all var(--primaryTransitionSpeed);
+}
+
+.login input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondaryColorReverse);
+}
+
+.login input::placeholder {
+  color: var(--secondaryColorReverse);
+  opacity: 0.7;
+}
+
+.login input[type="submit"] {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  cursor: pointer;
+  font-weight: bold;
+  transition: all var(--primaryTransitionSpeed);
+}
+
+.login input[type="submit"]:hover {
+  background-color: var(--primaryColor);
+  color: var(--secondaryColorReverse);
+}
