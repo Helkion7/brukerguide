@@ -8,5 +8,27 @@
   </head>
   <body>
     <%- include('partials/header') %>
+    <section class="loginSection">
+      <div class="loginContainer">
+        <form class="login" action="" method="post">
+          <h2>Login</h2>
+          <input type="email" name="email" id="email" placeholder="Email" />
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Password"
+          />
+          <input
+            type="repeatPassword"
+            name="repeatPassword"
+            id="repeatPassword"
+            placeholder="Repeat Password"
+          />
+          <input type="submit" value="Register" />
+        </form>
+        <a href="/register"><button>New user? Register here</button></a>
+      </div>
+    </section>
   </body>
 </html>
