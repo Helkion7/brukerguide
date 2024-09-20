@@ -9,21 +9,25 @@
   <body>
     <%- include('partials/header') %>
 
-    <section class="loginSection">
-      <div class="loginContainer">
-        <form class="login" action="" method="post">
-          <h2>Login</h2>
-          <input type="email" name="email" id="email" placeholder="Email" />
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Password"
-          />
-          <input type="submit" value="Log In" />
-        </form>
-        <a href="/register"><button>New user? Register here</button></a>
-      </div>
-    </section>
+    <div id="containerContainer">
+      <section class="loginSection">
+        <div class="loginContainer">
+          <form class="login" action="" method="post">
+            <h2>Login</h2>
+            <input type="email" name="email" id="email" placeholder="Email" />
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Password"
+            />
+            <input type="submit" value="Log In" />
+          </form>
+          <p class="userChange">
+            New user? <a href="/register">Register here</a>
+          </p>
+        </div>
+      </section>
+    </div>
   </body>
 </html>

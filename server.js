@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 const Schema = mongoose.Schema;
@@ -24,6 +25,7 @@ const userSchema = new Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+const saltRounds = 10;
 
 app.get("/", (req, res) => {
   res.render("index");
@@ -36,7 +38,25 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   console.log("logger ut her", req.body);
   const { email, password } = req.body;
-  res.status("200").json("OK");
+
+  User.findOne({ email: email })
+    .then((user) => {
+      if (!user) {
+        return res.status(400).json({ error: "User not found" });
+      }
+
+      bcrypt.compare(password, user.password).then((result) => {
+        if (result) {
+          return res.status(200).redirect("/dashboard");
+        } else {
+          return res.status(400).json({ error: "Invalid info" });
+        }
+      });
+    })
+    .catch((error) => {
+      console.log("error", error);
+      res.status(500).json({ error: "Server error" });
+    });
 });
 
 app.get("/register", (req, res) => {
@@ -48,23 +68,28 @@ app.post("/register", async (req, res) => {
   const { email, password, repeatPassword } = req.body;
 
   if (password === repeatPassword) {
-    // Fixed syntax for the if statement
-    const newUser = new User({ email: email, password: password });
+    bcrypt.hash(password, saltRounds, async function (error, hash) {
+      try {
+        const newUser = new User({ email: email, password: hash });
+        const result = await newUser.save();
+        console.log(result);
+        console.log(newUser);
 
-    try {
-      const result = await newUser.save();
-      console.log(result);
-
-      if (result._id) {
-        res.redirect("/");
+        if (result._id) {
+          res.redirect("/login");
+        }
+      } catch (error) {
+        console.error("Error saving user:", error);
+        res.status(500).json("Error saving user");
       }
-    } catch (error) {
-      console.error("Error saving user:", error);
-      res.status(500).json("Error saving user");
-    }
+    });
   } else {
-    res.status(400).json("Passwords do not match"); // Replaced alert with server-side response
+    res.status(400).json("Passwords do not match");
   }
+});
+
+app.get("/dashboard", (req, res) => {
+  res.render("dashboard");
 });
 
 app.get("/guides", (req, res) => {

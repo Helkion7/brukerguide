@@ -439,18 +439,26 @@ main {
 .loginContainer {
   flex: 1;
   display: flex;
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 20px;
-}
-
-.login {
   background-color: var(--secondaryColor);
   padding: 40px;
   border-radius: var(--borderRadius);
   box-shadow: var(--primaryBoxShadow);
   width: 100%;
   max-width: 400px;
+}
+
+#containerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
 }
 
 .login h2 {
@@ -491,4 +499,13 @@ main {
 .login input[type="submit"]:hover {
   background-color: var(--primaryColor);
   color: var(--secondaryColorReverse);
+}
+
+.userChange {
+  color: white;
+}
+
+.userChange a {
+  color: rgb(175, 175, 175);
+  font-weight: bolder;
 }
