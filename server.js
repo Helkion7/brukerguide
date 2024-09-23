@@ -3,9 +3,29 @@ const app = express();
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const multer = require("multer");
+const path = require("path");
 require("dotenv").config();
 
 const Schema = mongoose.Schema;
+
+const diskStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./uploads");
+  },
+  fileName: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    console.log("EXT", ext);
+
+    const fileName = file.originalname + ".png";
+
+    cb(null, fileName);
+  },
+});
+
+const uploads = multer({
+  storage: diskStorage,
+});
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -22,6 +42,14 @@ mongoose
 const userSchema = new Schema({
   email: String,
   password: String,
+});
+
+const brukerSchema = new Schema({
+  tittel: String,
+  tag: String,
+  overskrift: Array,
+  beskrivelse: Array,
+  bilde: Array,
 });
 
 const User = mongoose.model("User", userSchema);
@@ -94,6 +122,10 @@ app.get("/dashboard", (req, res) => {
 
 app.get("/guides", (req, res) => {
   res.render("guides");
+});
+
+app.get("/createGuide", (req, res) => {
+  res.render("createGuide");
 });
 
 app.listen(process.env.PORT);

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create guide</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <section id="createGuide">
+      <form class="createGuideForm" action="" method="post">
+        <div>
+          <label for="">Title</label>
+          <input type="text" name="title" id="title" required />
+        </div>
+        <div>
+          <label for="">Tag</label>
+          <input type="text" name="tag" id="tag" required />
+        </div>
+
+        <div id="moreSections">
+          <div>
+            <label for="">Overskrift</label>
+            <input type="text" name="overskrift" id="overskrift" />
+          </div>
+          <div>
+            <label for="">Beskrivelse</label>
+            <input type="text" name="beskrivelse" id="beskrivelse" />
+          </div>
+          <div>
+            <label for="">Bilde</label>
+            <input
+              type="file"
+              name="bilde"
+              id="bilde"
+              accept="image/png image/jpeg image/jpg"
+            />
+          </div>
+        </div>
+      </form>
+    </section>
+  </body>
+</html>
