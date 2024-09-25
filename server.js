@@ -36,7 +36,7 @@ app.use(morgan("tiny"));
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/brukerGuide")
-  .then(() => console.log("connected"))
+  .then(() => console.log("connected at port", process.env.PORT))
   .catch((error) => console.log("error", error));
 
 const userSchema = new Schema({
@@ -126,6 +126,10 @@ app.get("/guides", (req, res) => {
 
 app.get("/createGuide", (req, res) => {
   res.render("createGuide");
+});
+
+app.get("/*", (req, res) => {
+  res.render("404");
 });
 
 app.listen(process.env.PORT);

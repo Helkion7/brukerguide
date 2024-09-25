@@ -1,0 +1,150 @@
+#createGuide {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: var(--secondaryColor);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--primaryBoxShadow);
+}
+
+.createGuideForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.createGuideForm > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.createGuideForm label {
+  color: var(--secondaryColorReverse);
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.createGuideForm input[type="text"],
+.createGuideForm input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--secondaryColorReverse);
+  border-radius: calc(var(--borderRadius) / 2);
+  background-color: var(--primaryColor);
+  color: var(--secondaryColorReverse);
+  transition: all var(--primaryTransitionSpeed);
+}
+
+.createGuideForm input[type="text"]:focus,
+.createGuideForm input[type="file"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondaryColorReverse);
+}
+
+.createGuideForm input[type="file"] {
+  padding: 5px;
+}
+
+.createGuideForm textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--secondaryColorReverse);
+  border-radius: calc(var(--borderRadius) / 2);
+  background-color: var(--primaryColor);
+  color: var(--secondaryColorReverse);
+  transition: all var(--primaryTransitionSpeed);
+}
+
+.createGuideForm textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondaryColorReverse);
+}
+
+.createGuideForm input[type="file"]::file-selector-button {
+  padding: 5px 10px;
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  border: none;
+  border-radius: calc(var(--borderRadius) / 4);
+  cursor: pointer;
+  transition: all var(--primaryTransitionSpeed);
+}
+
+.createGuideForm input[type="file"]::file-selector-button:hover {
+  background-color: var(--primaryColor);
+  color: var(--secondaryColorReverse);
+}
+
+#imageDisplay {
+  max-width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-shadow: none;
+  border-radius: var(--borderRadius);
+}
+
+#moreSections > div {
+  border: 1px solid var(--secondaryColorReverse);
+  border-radius: var(--borderRadius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+button,
+input {
+  padding: 10px 20px;
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  border: none;
+  border-radius: calc(var(--borderRadius) / 2);
+  cursor: pointer;
+  font-weight: bold;
+  transition: all var(--primaryTransitionSpeed);
+  align-self: flex-start;
+}
+
+button:hover,
+input:hover {
+  background-color: var(--primaryColor);
+  color: var(--secondaryColorReverse);
+}
+
+#op {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+}
+
+#beskrivelse {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--secondaryColorReverse);
+  border-radius: calc(var(--borderRadius) / 2);
+  background-color: var(--primaryColor);
+  color: var(--secondaryColorReverse);
+  transition: all var(--primaryTransitionSpeed);
+  resize: none;
+}
+
+.newSection {
+  opacity: 0; /* Start invisible */
+  transform: translateY(-20px); /* Start slightly above */
+  transition: opacity var(--primaryTransitionSpeed),
+    transform var(--primaryTransitionSpeed);
+  margin-bottom: 20px; /* Space between sections */
+}
+
+.newSection.visible {
+  opacity: 1; /* Fade in */
+  transform: translateY(0); /* Slide down */
+}
+
+@media (max-width: 600px) {
+  #createGuide {
+    padding: 20px;
+    margin: 20px;
+  }
+}

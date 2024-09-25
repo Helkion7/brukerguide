@@ -1,0 +1,127 @@
+:root {
+  --primaryColor: #3d3d3d;
+  --secondaryColor: #242424;
+  --secondaryColorReverse: #dbdbdb;
+  --primaryTextColor: #fff;
+  --primaryFontFamily: poppins, Helvetica, sans-serif;
+  --borderRadius: 20px;
+  --primaryTransitionSpeed: 0.3s;
+  --primaryBoxShadow: 3px 3px 4px 0px rgba(0, 0, 0, 1);
+  --primaryBoxShadowHover: 0px 0px 8px 7px rgba(128, 128, 128, 1);
+}
+
+body {
+  background: #0f2027;
+  background: -webkit-linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.body {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: var(--primaryTextColor);
+  font-family: var(--primaryFontFamily);
+}
+
+h1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10rem;
+  font-family: "Times New Roman", Times, serif;
+  margin-bottom: 0;
+  animation: fadeInDown 1s ease-out;
+}
+
+p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 2rem;
+  font-family: "Times New Roman", Times, serif;
+  max-width: 60%;
+  animation: fadeIn 1s ease-out 0.5s both;
+}
+
+.home-button {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: var(--secondaryColor);
+  color: var(--primaryTextColor);
+  text-decoration: none;
+  border-radius: var(--borderRadius);
+  transition: all var(--primaryTransitionSpeed) ease;
+  font-family: var(--primaryFontFamily);
+  animation: fadeIn 1s ease-out 1s both;
+}
+
+.home-button:hover {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  box-shadow: var(--primaryBoxShadowHover);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shipSail {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes shipRock {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 7.5rem;
+  }
+  p {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 5rem;
+  }
+  p {
+    font-size: 1.5rem;
+  }
+}
