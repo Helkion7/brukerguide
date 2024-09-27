@@ -64,7 +64,6 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log("logger ut her", req.body);
   const { email, password } = req.body;
 
   User.findOne({ email: email })
@@ -92,7 +91,6 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  console.log("lagrer bruker", req.body);
   const { email, password, repeatPassword } = req.body;
 
   if (password === repeatPassword) {
@@ -101,18 +99,17 @@ app.post("/register", async (req, res) => {
         const newUser = new User({ email: email, password: hash });
         const result = await newUser.save();
         console.log(result);
-        console.log(newUser);
 
         if (result._id) {
           res.redirect("/login");
         }
       } catch (error) {
         console.error("Error saving user:", error);
-        res.status(500).json("Error saving user");
+        res.status(500).json({ error: "Error saving user" });
       }
     });
   } else {
-    res.status(400).json("Passwords do not match");
+    res.status(400).json({ error: "Passwords do not match" });
   }
 });
 
