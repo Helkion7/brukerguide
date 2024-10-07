@@ -19,37 +19,28 @@
         enctype="multipart/form-data"
       >
         <div>
-          <label for="">Title</label>
+          <label for="title">Title</label>
           <input type="text" name="title" id="title" required />
         </div>
         <div>
-          <label for="">Tag</label>
+          <label for="tag">Tag</label>
           <input type="text" name="tag" id="tag" required />
         </div>
 
-        <div id="moreSections">
-          <div>
+        <!-- Section Fields -->
+        <div id="sectionsContainer">
+          <div class="section">
             <div>
-              <label for="">Overskrift</label>
-              <input type="text" name="overskrift" id="overskrift" />
+              <label for="overskrift">Overskrift</label>
+              <input type="text" name="overskrift" required />
             </div>
             <div>
-              <label for="">Beskrivelse</label>
-              <textarea
-                name="beskrivelse"
-                id="beskrivelse"
-                rows="4"
-                required
-              ></textarea>
+              <label for="beskrivelse">Beskrivelse</label>
+              <textarea name="beskrivelse" rows="4" required></textarea>
             </div>
             <div>
-              <label for="">Bilde</label>
-              <input
-                type="file"
-                name="bilde"
-                id="bilde"
-                accept="image/png image/jpeg image/jpg"
-              />
+              <label for="bilde">Bilde</label>
+              <input type="file" name="bilde" accept="image/png, image/jpeg" />
               <img
                 id="imageDisplay"
                 src=""
@@ -59,13 +50,49 @@
             </div>
           </div>
         </div>
-        <div id="op">
-          <input type="submit" value="submit" />
+
+        <!-- Buttons -->
+        <div>
+          <button type="button" onclick="addSection()">Add Section</button>
+        </div>
+
+        <div id="submitContainer">
+          <input type="submit" value="Create Guide" />
         </div>
       </form>
-      <button onclick="moreSections()">Add a section</button>
     </section>
-    <script src="/js/moreSections.js"></script>
-    <script></script>
+
+    <script>
+      // Function to dynamically add more sections
+      function addSection() {
+        const container = document.getElementById("sectionsContainer");
+        const sectionHTML = `
+          <div class="section">
+            <div>
+              <label for="overskrift">Overskrift</label>
+              <input type="text" name="overskrift" required />
+            </div>
+            <div>
+              <label for="beskrivelse">Beskrivelse</label>
+              <textarea name="beskrivelse" rows="4" required></textarea>
+            </div>
+            <div>
+              <label for="bilde">Bilde</label>
+              <input
+                type="file"
+                name="bilde"
+                accept="image/png, image/jpeg"
+              />
+              <img
+                id="imageDisplay"
+                src=""
+                alt="Selected image"
+                style="max-width: 100%; display: none"
+              />
+            </div>
+          </div>`;
+        container.insertAdjacentHTML("beforeend", sectionHTML);
+      }
+    </script>
   </body>
 </html>

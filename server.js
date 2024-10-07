@@ -123,15 +123,16 @@ app.get("/dashboard", (req, res) => {
   res.render("dashboard");
 });
 
-// Route to retrieve all guides
 app.get("/guides", async (req, res) => {
   try {
-    const guides = await Guide.find(); // Fetching guides from the database
-    console.log(guides);
-    res.render("guides", { guides }); // Ensure guides are passed to the template
+    // Fetch all guides from the database
+    const guides = await Guide.find({});
+
+    // Render the 'guides' view and pass the guides data to the frontend
+    res.render("guides", { guides });
   } catch (error) {
-    console.error("Error retrieving guides:", error);
-    res.status(500).send("Error retrieving guides");
+    console.error("Error fetching guides:", error);
+    res.status(500).json({ error: "Error fetching guides" });
   }
 });
 

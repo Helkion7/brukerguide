@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Guides</title>
     <link rel="stylesheet" href="/css/styles.css" />
-    <script src="/js/app.js"></script>
   </head>
   <body>
     <%- include('partials/header') %>
 
     <div class="gridContainer">
+      <!-- Sidebar with Guide Links -->
       <div class="aside">
         <div class="sideNav">
           <ul id="sideNavGrid">
@@ -29,26 +29,37 @@
           </ul>
         </div>
       </div>
-      <ul class="mainContainer">
-        <% if (guides && guides.length > 0) { %> <% guides.forEach((guide,
-        index) => { %>
-        <li id="guide<%= index + 1 %>" class="guides">
-          <h1><%= guide.tittel %></h1>
-          <div class="imageTextContainer">
-            <% if (guide.bilde && guide.bilde.length > 0) { %> <%
-            guide.bilde.forEach((filename) => { %>
-            <img src="/uploads/<%= filename %>" alt="Guide Image" />
-            <% console.log("Guide images:", guide.bilde); %> <% }) %> <% } else
-            { %>
-            <p>No images available.</p>
-            <% } %>
-            <p><%= guide.beskrivelse.join(", ") %></p>
-          </div>
-        </li>
-        <% }) %> <% } else { %>
-        <li>No guides available.</li>
-        <% } %>
-      </ul>
+
+      <!-- Main content with guides -->
+      <main class="mainContainer">
+        <ul>
+          <% guides.forEach((guide, index) => { %>
+          <li class="guides" id="guide<%= index + 1 %>">
+            <h1><%= guide.tittel %></h1>
+            <p><strong>Tag:</strong> <%= guide.tag %></p>
+
+            <!-- Display each section with visual differentiation -->
+            <div class="sectionsContainer">
+              <% for (let i = 0; i < guide.overskrift.length; i++) { %>
+              <div class="sectionItem">
+                <h2>Section <%= i + 1 %>: <%= guide.overskrift[i] %></h2>
+                <p><%= guide.beskrivelse[i] %></p>
+
+                <!-- Display associated image, if available -->
+                <% if (guide.bilde[i]) { %>
+                <img
+                  src="/uploads/<%= guide.bilde[i] %>"
+                  alt="Section Image"
+                  class="sectionImage"
+                />
+                <% } %>
+              </div>
+              <% } %>
+            </div>
+          </li>
+          <% }) %>
+        </ul>
+      </main>
     </div>
   </body>
 </html>
