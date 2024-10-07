@@ -36,17 +36,10 @@
           <h1><%= guide.tittel %></h1>
           <div class="imageTextContainer">
             <% if (guide.bilde && guide.bilde.length > 0) { %> <%
-            guide.bilde.forEach((bilde) => { %>
-            <img
-              src="/uploads/<%= bilde.filename %>"
-              <!--
-              Access
-              the
-              correct
-              property
-              --
-            />
-            alt="Guide Image" style="max-width: 100%" /> <% }) %> <% } else { %>
+            guide.bilde.forEach((filename) => { %>
+            <img src="/uploads/<%= filename %>" alt="Guide Image" />
+            <% console.log("Guide images:", guide.bilde); %> <% }) %> <% } else
+            { %>
             <p>No images available.</p>
             <% } %>
             <p><%= guide.beskrivelse.join(", ") %></p>

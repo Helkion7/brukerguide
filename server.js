@@ -144,15 +144,14 @@ app.get("/createGuide", (req, res) => {
 app.post("/createGuide", uploads.array("bilde"), async (req, res) => {
   try {
     const { title, tag, overskrift, beskrivelse } = req.body;
-    const bilde = req.files;
-    console.log(req.files);
+    const bilde = req.files.map((file) => file.filename); // Store only the filenames
 
     const newGuide = new Guide({
       tittel: title,
       tag: tag,
       overskrift: overskrift ? [overskrift] : [],
       beskrivelse: beskrivelse ? [beskrivelse] : [],
-      bilde: bilde ? [bilde] : [],
+      bilde: bilde, // Save filenames here
     });
 
     const result = await newGuide.save();
