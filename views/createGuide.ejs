@@ -12,7 +12,12 @@
     <%- include('partials/header') %>
 
     <section id="createGuide">
-      <form class="createGuideForm" action="" method="post">
+      <form
+        class="createGuideForm"
+        action="/createGuide"
+        method="post"
+        enctype="multipart/form-data"
+      >
         <div>
           <label for="">Title</label>
           <input type="text" name="title" id="title" required />
