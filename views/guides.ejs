@@ -30,7 +30,6 @@
         </div>
       </div>
 
-      <!-- Main content with guides -->
       <main class="mainContainer">
         <ul>
           <% guides.forEach((guide, index) => { %>
@@ -38,14 +37,12 @@
             <h1><%= guide.tittel %></h1>
             <p><strong>Tag:</strong> <%= guide.tag %></p>
 
-            <!-- Display each section with visual differentiation -->
             <div class="sectionsContainer">
               <% for (let i = 0; i < guide.overskrift.length; i++) { %>
               <div class="sectionItem">
                 <h2>Section <%= i + 1 %>: <%= guide.overskrift[i] %></h2>
                 <p><%= guide.beskrivelse[i] %></p>
 
-                <!-- Display associated image, if available -->
                 <% if (guide.bilde[i]) { %>
                 <img
                   src="/uploads/<%= guide.bilde[i] %>"

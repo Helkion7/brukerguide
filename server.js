@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const Schema = mongoose.Schema;
@@ -55,14 +56,38 @@ const brukerSchema = new Schema({
   bilde: Array,
 });
 
+// Middleware to verify JWT
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1]; // Get token from Authorization header
+
+  if (!token) {
+    return res.redirect("/login");
+  }
+
+  jwt.verify(token, process.env.secretKey, (error, decoded) => {
+    if (error) {
+      return res.status(403).json({ error: "Invalid token." });
+    }
+
+    req.user = decoded; // Add decoded token info to the request
+    next();
+  });
+};
+
 // Create a model from the brukerSchema
 const Guide = mongoose.model("Guide", brukerSchema);
 
 const User = mongoose.model("User", userSchema);
 const saltRounds = 10;
 
-app.get("/", (req, res) => {
-  res.render("index");
+app.get("/", async (req, res) => {
+  try {
+    const guides = await Guide.find({});
+    res.render("index", { guides });
+  } catch (error) {
+    console.error("Error fetching guides:", error);
+    res.status(500).json({ error: "Error fetching guides" });
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -80,7 +105,13 @@ app.post("/login", (req, res) => {
 
       bcrypt.compare(password, user.password).then((result) => {
         if (result) {
-          return res.status(200).redirect("/dashboard");
+          const token = jwt.sign(
+            { userId: user._id, email: user.email },
+            process.env.secretKey
+          );
+
+          // Send the token as a response
+          return res.status(200).json({ token });
         } else {
           return res.status(400).json({ error: "Invalid info" });
         }
@@ -119,16 +150,14 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/dashboard", (req, res) => {
-  res.render("dashboard");
+app.get("/dashboard", verifyToken, (req, res) => {
+  res.render("dashboard", { user: req.user });
 });
 
 app.get("/guides", async (req, res) => {
   try {
-    // Fetch all guides from the database
     const guides = await Guide.find({});
 
-    // Render the 'guides' view and pass the guides data to the frontend
     res.render("guides", { guides });
   } catch (error) {
     console.error("Error fetching guides:", error);
@@ -136,11 +165,9 @@ app.get("/guides", async (req, res) => {
   }
 });
 
-app.get("/createGuide", (req, res) => {
-  res.render("createGuide");
+app.get("/createGuide", verifyToken, (req, res) => {
+  res.render("createGuide", { user: req.user });
 });
-
-// app.post("/createGuide", uploads.single("bilde"), async (req, res) => {
 
 app.post("/createGuide", uploads.array("bilde"), async (req, res) => {
   try {
@@ -152,7 +179,7 @@ app.post("/createGuide", uploads.array("bilde"), async (req, res) => {
       tag: tag,
       overskrift: overskrift ? [overskrift] : [],
       beskrivelse: beskrivelse ? [beskrivelse] : [],
-      bilde: bilde, // Save filenames here
+      bilde: bilde,
     });
 
     const result = await newGuide.save();

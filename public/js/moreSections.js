@@ -5,7 +5,7 @@ const moreSectionsContainer = document.getElementById("moreSections");
 
 moreSectionsButton.addEventListener("click", function () {
   const newSection = document.createElement("div");
-  newSection.classList.add("newSection"); // Apply the class for animation
+  newSection.classList.add("newSection");
 
   newSection.innerHTML = `
     <div>

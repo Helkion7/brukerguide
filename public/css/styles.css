@@ -238,18 +238,19 @@ main {
 }
 
 .guideCardContent {
+  padding: 20px;
   background-color: var(--secondaryColor);
-  padding: 5px;
   border-radius: var(--borderRadius);
   box-shadow: var(--primaryBoxShadow);
-  width: 30%;
   height: 150px;
   transition: all 0.3s ease;
+  text-decoration: none;
+  color: #fff;
 }
 
 #guideCards :hover {
   transform: scale(1.1);
-  color: #fff;
+  color: var(--primaryColor);
   background-color: var(--secondaryColorReverse);
   box-shadow: var(--primaryBoxShadowHover);
 }

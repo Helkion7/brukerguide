@@ -9,36 +9,34 @@
   </head>
   <body>
     <%- include('partials/header') %>
+
+    <!-- Search Bar -->
     <section id="search" class="contentSection">
-      <div id="searchBar">
-        <div>
-          <div class="search"></div>
-        </div>
-      </div>
+      <input
+        type="text"
+        id="myInput"
+        onkeyup="searchGuides()"
+        placeholder="Søk..."
+      />
     </section>
+
+    <!-- Guide Cards Section -->
     <section id="guides" class="contentSection">
       <main>
         <div id="guideCards">
-          <a href="#">
-            <div class="guideCardContent"></div>
+          <% guides.forEach(guide => { %>
+          <a style="text-decoration: none" href="/guides/<%= guide.id %>">
+            <div class="guideCardContent">
+              <h3 class="guideTitle"><%= guide.tittel %></h3>
+              <p class="guideTag"><%= guide.tag %></p>
+            </div>
           </a>
-          <a href="#">
-            <div class="guideCardContent"></div>
-          </a>
-          <a href="#">
-            <div class="guideCardContent"></div>
-          </a>
-          <a href="#">
-            <div class="guideCardContent"></div>
-          </a>
-          <a href="#">
-            <div class="guideCardContent"></div>
-          </a>
-          <a href="#">
-            <div class="guideCardContent"></div>
-          </a>
+          <% }) %>
         </div>
       </main>
     </section>
+
+    <!-- JavaScript for search -->
+    <script src="/js/searchBar.js"></script>
   </body>
 </html>

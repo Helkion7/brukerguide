@@ -63,6 +63,27 @@
     </section>
 
     <script>
+      document.addEventListener("change", function (event) {
+        if (event.target && event.target.name === "bilde") {
+          const fileInput = event.target;
+          const imageDisplay = fileInput.nextElementSibling;
+
+          if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+              imageDisplay.src = e.target.result;
+              imageDisplay.style.display = "block"; // Show the image
+            };
+
+            reader.readAsDataURL(fileInput.files[0]);
+          } else {
+            imageDisplay.style.display = "none"; // Hide the image if no file is selected
+          }
+        }
+      });
+    </script>
+    <script>
       // Function to dynamically add more sections
       function addSection() {
         const container = document.getElementById("sectionsContainer");
