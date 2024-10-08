@@ -6,7 +6,10 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
+
+app.use(cookieParser());
 
 const Schema = mongoose.Schema;
 
@@ -58,7 +61,7 @@ const brukerSchema = new Schema({
 
 // Middleware to verify JWT
 const verifyToken = (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1]; // Get token from Authorization header
+  const token = req.cookies.token; // Get token from cookie
 
   if (!token) {
     return res.redirect("/login");
@@ -107,13 +110,17 @@ app.post("/login", (req, res) => {
         if (result) {
           const token = jwt.sign(
             { userId: user._id, email: user.email },
-            process.env.secretKey
+            process.env.secretKey,
+            { expiresIn: "1h" } // Optional: token expiry
           );
 
-          // Send the token as a response
-          return res.status(200).json({ token });
+          // Set the JWT as a cookie
+          res.cookie("token", token, { httpOnly: true });
+
+          // Redirect the user to the dashboard
+          return res.redirect("/dashboard");
         } else {
-          return res.status(400).json({ error: "Invalid info" });
+          return res.status(400).json({ error: "Invalid credentials" });
         }
       });
     })
