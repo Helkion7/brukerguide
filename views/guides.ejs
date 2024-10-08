@@ -3,60 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Guides</title>
+    <title><%= guide.tittel %> - Helpdesk</title>
+    <link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon" />
     <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body>
     <%- include('partials/header') %>
 
-    <div class="gridContainer">
-      <!-- Sidebar with Guide Links -->
-      <div class="aside">
-        <div class="sideNav">
-          <ul id="sideNavGrid">
-            <% if (guides && guides.length > 0) { %> <% guides.forEach((guide,
-            index) => { %>
-            <li>
-              <button
-                onclick="document.getElementById('guide<%= index + 1 %>').scrollIntoView({ behavior: 'smooth' });"
-              >
-                Guide <%= index + 1 %>
-              </button>
-            </li>
-            <% }) %> <% } else { %>
-            <li>No guides available.</li>
-            <% } %>
-          </ul>
-        </div>
-      </div>
-
-      <main class="mainContainer">
+    <div class="guideContainer">
+      <aside class="sideNav">
+        <h2>Sections</h2>
         <ul>
-          <% guides.forEach((guide, index) => { %>
-          <li class="guides" id="guide<%= index + 1 %>">
-            <h1><%= guide.tittel %></h1>
-            <p><strong>Tag:</strong> <%= guide.tag %></p>
-
-            <div class="sectionsContainer">
-              <% for (let i = 0; i < guide.overskrift.length; i++) { %>
-              <div class="sectionItem">
-                <h2>Section <%= i + 1 %>: <%= guide.overskrift[i] %></h2>
-                <p><%= guide.beskrivelse[i] %></p>
-
-                <% if (guide.bilde[i]) { %>
-                <img
-                  src="/uploads/<%= guide.bilde[i] %>"
-                  alt="Section Image"
-                  class="sectionImage"
-                />
-                <% } %>
-              </div>
-              <% } %>
-            </div>
+          <% guide.overskrift.forEach((title, index) => { %>
+          <li>
+            <a href="#section<%= index %>"><%= title %></a>
           </li>
           <% }) %>
         </ul>
+      </aside>
+
+      <main class="guideContent">
+        <h1><%= guide.tittel %></h1>
+        <p class="guideTag"><strong>Tag:</strong> <%= guide.tag %></p>
+
+        <% guide.overskrift.forEach((title, index) => { %>
+        <section id="section<%= index %>">
+          <h2><%= title %></h2>
+          <p><%= guide.beskrivelse[index] %></p>
+          <% if (guide.bilde[index]) { %>
+          <img
+            src="/uploads/<%= guide.bilde[index] %>"
+            alt="Section Image"
+            class="sectionImage"
+          />
+          <% } %>
+        </section>
+        <% }) %>
       </main>
+    </div>
+
+    <div class="backToHome">
+      <a href="/">Back to All Guides</a>
     </div>
   </body>
 </html>

@@ -25,7 +25,7 @@
       <main>
         <div id="guideCards">
           <% guides.forEach(guide => { %>
-          <a style="text-decoration: none" href="/guides/<%= guide.id %>">
+          <a href="/guides/<%= guide._id %>" class="guideCard">
             <div class="guideCardContent">
               <h3 class="guideTitle"><%= guide.tittel %></h3>
               <p class="guideTag"><%= guide.tag %></p>
