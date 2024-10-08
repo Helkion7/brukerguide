@@ -3,56 +3,116 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Guide - Helpdesk</title>
-    <link rel="shortcut icon" href="/img/favicon.png" type="image/x-icon" />
+    <title>Create guide</title>
+
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/createGuide.css" />
   </head>
   <body>
     <%- include('partials/header') %>
 
-    <div class="createGuideContainer">
-      <h1>Create New Guide</h1>
-      <form action="/createGuide" method="POST" enctype="multipart/form-data">
+    <section id="createGuide">
+      <form
+        class="createGuideForm"
+        action="/createGuide"
+        method="post"
+        enctype="multipart/form-data"
+      >
         <div>
-          <label for="title">Title:</label>
-          <input type="text" id="title" name="title" required />
+          <label for="title">Title</label>
+          <input type="text" name="title" id="title" required />
         </div>
         <div>
-          <label for="tag">Tag:</label>
-          <input type="text" id="tag" name="tag" required />
+          <label for="tag">Tag</label>
+          <input type="text" name="tag" id="tag" required />
         </div>
-        <div id="sections">
+
+        <!-- Section Fields -->
+        <div id="sectionsContainer">
           <div class="section">
-            <h3>Section 1</h3>
-            <label for="overskrift0">Heading:</label>
-            <input type="text" name="overskrift[]" required />
-            <label for="beskrivelse0">Description:</label>
-            <textarea name="beskrivelse[]" required></textarea>
-            <label for="bilde0">Image:</label>
-            <input type="file" name="bilde" accept="image/*" />
+            <div>
+              <label for="overskrift">Overskrift</label>
+              <input type="text" name="overskrift" required />
+            </div>
+            <div>
+              <label for="beskrivelse">Beskrivelse</label>
+              <textarea name="beskrivelse" rows="4" required></textarea>
+            </div>
+            <div>
+              <label for="bilde">Bilde</label>
+              <input type="file" name="bilde" accept="image/png, image/jpeg" />
+              <img
+                id="imageDisplay"
+                src=""
+                alt="Selected image"
+                style="max-width: 100%; display: none"
+              />
+            </div>
           </div>
         </div>
-        <button type="button" onclick="addSection()">Add Section</button>
-        <button type="submit">Create Guide</button>
+
+        <!-- Buttons -->
+        <div>
+          <button type="button" onclick="addSection()">Add Section</button>
+        </div>
+
+        <div id="submitContainer">
+          <input type="submit" value="Create Guide" />
+        </div>
       </form>
-    </div>
+    </section>
 
     <script>
-      let sectionCount = 1;
+      document.addEventListener("change", function (event) {
+        if (event.target && event.target.name === "bilde") {
+          const fileInput = event.target;
+          const imageDisplay = fileInput.nextElementSibling;
+
+          if (fileInput.files && fileInput.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+              imageDisplay.src = e.target.result;
+              imageDisplay.style.display = "block"; // Show the image
+            };
+
+            reader.readAsDataURL(fileInput.files[0]);
+          } else {
+            imageDisplay.style.display = "none"; // Hide the image if no file is selected
+          }
+        }
+      });
+    </script>
+    <script>
+      // Function to dynamically add more sections
       function addSection() {
-        sectionCount++;
-        const newSection = document.createElement("div");
-        newSection.className = "section";
-        newSection.innerHTML = `
-          <h3>Section ${sectionCount}</h3>
-          <label for="overskrift${sectionCount - 1}">Heading:</label>
-          <input type="text" name="overskrift[]" required>
-          <label for="beskrivelse${sectionCount - 1}">Description:</label>
-          <textarea name="beskrivelse[]" required></textarea>
-          <label for="bilde${sectionCount - 1}">Image:</label>
-          <input type="file" name="bilde" accept="image/*">
-        `;
-        document.getElementById("sections").appendChild(newSection);
+        const container = document.getElementById("sectionsContainer");
+        const sectionHTML = `
+          <div class="section">
+            <div>
+              <label for="overskrift">Overskrift</label>
+              <input type="text" name="overskrift" required />
+            </div>
+            <div>
+              <label for="beskrivelse">Beskrivelse</label>
+              <textarea name="beskrivelse" rows="4" required></textarea>
+            </div>
+            <div>
+              <label for="bilde">Bilde</label>
+              <input
+                type="file"
+                name="bilde"
+                accept="image/png, image/jpeg"
+              />
+              <img
+                id="imageDisplay"
+                src=""
+                alt="Selected image"
+                style="max-width: 100%; display: none"
+              />
+            </div>
+          </div>`;
+        container.insertAdjacentHTML("beforeend", sectionHTML);
       }
     </script>
   </body>

@@ -154,16 +154,14 @@ app.get("/dashboard", verifyToken, (req, res) => {
   res.render("dashboard", { user: req.user });
 });
 
-app.get("/guides/:id", async (req, res) => {
+app.get("/guides", async (req, res) => {
   try {
-    const guide = await Guide.findById(req.params.id);
-    if (!guide) {
-      return res.status(404).render("404");
-    }
-    res.render("guides", { guide });
+    const guides = await Guide.find({});
+
+    res.render("guides", { guides });
   } catch (error) {
-    console.error("Error fetching guide:", error);
-    res.status(500).json({ error: "Error fetching guide" });
+    console.error("Error fetching guides:", error);
+    res.status(500).json({ error: "Error fetching guides" });
   }
 });
 
@@ -171,32 +169,27 @@ app.get("/createGuide", verifyToken, (req, res) => {
   res.render("createGuide", { user: req.user });
 });
 
-app.post(
-  "/createGuide",
-  verifyToken,
-  uploads.array("bilde"),
-  async (req, res) => {
-    try {
-      const { title, tag, overskrift, beskrivelse } = req.body;
-      const bilde = req.files.map((file) => file.filename);
+app.post("/createGuide", uploads.array("bilde"), async (req, res) => {
+  try {
+    const { title, tag, overskrift, beskrivelse } = req.body;
+    const bilde = req.files.map((file) => file.filename); // Store only the filenames
 
-      const newGuide = new Guide({
-        tittel: title,
-        tag: tag,
-        overskrift: Array.isArray(overskrift) ? overskrift : [overskrift],
-        beskrivelse: Array.isArray(beskrivelse) ? beskrivelse : [beskrivelse],
-        bilde: bilde,
-      });
+    const newGuide = new Guide({
+      tittel: title,
+      tag: tag,
+      overskrift: overskrift ? [overskrift] : [],
+      beskrivelse: beskrivelse ? [beskrivelse] : [],
+      bilde: bilde,
+    });
 
-      const result = await newGuide.save();
-      console.log("Guide saved:", result);
-      res.redirect("/");
-    } catch (error) {
-      console.error("Error creating guide:", error);
-      res.status(500).json({ error: "Error creating guide" });
-    }
+    const result = await newGuide.save();
+    console.log("Guide saved:", result);
+    res.redirect("/guides");
+  } catch (error) {
+    console.error("Error creating guide:", error);
+    res.status(500).json({ error: "Error creating guide" });
   }
-);
+});
 
 app.get("/*", (req, res) => {
   res.render("404");
