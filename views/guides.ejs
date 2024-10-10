@@ -17,11 +17,7 @@
             <% if (guides && guides.length > 0) { %> <% guides.forEach((guide,
             index) => { %>
             <li>
-              <button
-                onclick="document.getElementById('guide<%= index + 1 %>').scrollIntoView({ behavior: 'smooth' });"
-              >
-                Guide <%= index + 1 %>
-              </button>
+              <a href="/guides/<%= guide._id %>"> <%= guide.tittel %> </a>
             </li>
             <% }) %> <% } else { %>
             <li>No guides available.</li>
@@ -31,31 +27,50 @@
       </div>
 
       <main class="mainContainer">
-        <ul>
-          <% guides.forEach((guide, index) => { %>
-          <li class="guides" id="guide<%= index + 1 %>">
-            <h1><%= guide.tittel %></h1>
-            <p><strong>Tag:</strong> <%= guide.tag %></p>
+        <% if (selectedGuide) { %>
+        <!-- Display individual guide -->
+        <div class="guide">
+          <h1><%= selectedGuide.tittel %></h1>
+          <p><strong>Tag:</strong> <%= selectedGuide.tag %></p>
+          <p><strong>Author:</strong> <%= selectedGuide.author.email %></p>
 
-            <div class="sectionsContainer">
-              <% for (let i = 0; i < guide.overskrift.length; i++) { %>
-              <div class="sectionItem">
-                <h2>Section <%= i + 1 %>: <%= guide.overskrift[i] %></h2>
-                <p><%= guide.beskrivelse[i] %></p>
+          <% if (isAuthor) { %>
+          <div class="author-actions">
+            <a href="/editGuide/<%= selectedGuide._id %>" class="btn btn-edit"
+              >Edit Guide</a
+            >
+            <form
+              action="/deleteGuide/<%= selectedGuide._id %>"
+              method="POST"
+              onsubmit="return confirm('Are you sure you want to delete this guide?');"
+            >
+              <button type="submit" class="btn btn-delete">Delete Guide</button>
+            </form>
+          </div>
+          <% } %>
 
-                <% if (guide.bilde[i]) { %>
-                <img
-                  src="/uploads/<%= guide.bilde[i] %>"
-                  alt="Section Image"
-                  class="sectionImage"
-                />
-                <% } %>
-              </div>
+          <div class="sectionsContainer">
+            <% for (let i = 0; i < selectedGuide.overskrift.length; i++) { %>
+            <div class="sectionItem">
+              <h2>Section <%= i + 1 %>: <%= selectedGuide.overskrift[i] %></h2>
+              <p><%= selectedGuide.beskrivelse[i] %></p>
+
+              <% if (selectedGuide.bilde[i]) { %>
+              <img
+                src="/uploads/<%= selectedGuide.bilde[i] %>"
+                alt="Section Image"
+                class="sectionImage"
+              />
               <% } %>
             </div>
-          </li>
-          <% }) %>
-        </ul>
+            <% } %>
+          </div>
+        </div>
+        <% } else { %>
+        <!-- Display all guides (optional, or you can show a welcome message) -->
+        <h1>Welcome to Guides</h1>
+        <p>Please select a guide from the sidebar to view its content.</p>
+        <% } %>
       </main>
     </div>
   </body>

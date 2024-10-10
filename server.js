@@ -57,6 +57,11 @@ const brukerSchema = new Schema({
   overskrift: Array,
   beskrivelse: Array,
   bilde: Array,
+  author: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 // Middleware to verify JWT
@@ -164,11 +169,33 @@ app.get("/dashboard", verifyToken, (req, res) => {
 app.get("/guides", async (req, res) => {
   try {
     const guides = await Guide.find({});
-
-    res.render("guides", { guides });
+    res.render("guides", { guides, selectedGuide: null });
   } catch (error) {
     console.error("Error fetching guides:", error);
     res.status(500).json({ error: "Error fetching guides" });
+  }
+});
+
+// New route for individual guides
+app.get("/guides/:id", async (req, res) => {
+  try {
+    const guideId = req.params.id;
+    const selectedGuide = await Guide.findById(guideId).populate(
+      "author",
+      "email"
+    );
+
+    if (!selectedGuide) {
+      return res.status(404).render("404");
+    }
+
+    const guides = await Guide.find({});
+    const isAuthor =
+      req.user && req.user.userId === selectedGuide.author._id.toString();
+    res.render("guides", { guides, selectedGuide, isAuthor });
+  } catch (error) {
+    console.error("Error fetching guide:", error);
+    res.status(500).json({ error: "Error fetching guide" });
   }
 });
 
@@ -176,27 +203,33 @@ app.get("/createGuide", verifyToken, (req, res) => {
   res.render("createGuide", { user: req.user });
 });
 
-app.post("/createGuide", uploads.array("bilde"), async (req, res) => {
-  try {
-    const { title, tag, overskrift, beskrivelse } = req.body;
-    const bilde = req.files.map((file) => file.filename); // Store only the filenames
+app.post(
+  "/createGuide",
+  verifyToken,
+  uploads.array("bilde"),
+  async (req, res) => {
+    try {
+      const { title, tag, overskrift, beskrivelse } = req.body;
+      const bilde = req.files.map((file) => file.filename);
 
-    const newGuide = new Guide({
-      tittel: title,
-      tag: tag,
-      overskrift: overskrift ? [overskrift] : [],
-      beskrivelse: beskrivelse ? [beskrivelse] : [],
-      bilde: bilde,
-    });
+      const newGuide = new Guide({
+        tittel: title,
+        tag: tag,
+        overskrift: overskrift ? [overskrift] : [],
+        beskrivelse: beskrivelse ? [beskrivelse] : [],
+        bilde: bilde,
+        author: req.user.userId, // Add the author's ID from the JWT
+      });
 
-    const result = await newGuide.save();
-    console.log("Guide saved:", result);
-    res.redirect("/guides");
-  } catch (error) {
-    console.error("Error creating guide:", error);
-    res.status(500).json({ error: "Error creating guide" });
+      const result = await newGuide.save();
+      console.log("Guide saved:", result);
+      res.redirect("/guides");
+    } catch (error) {
+      console.error("Error creating guide:", error);
+      res.status(500).json({ error: "Error creating guide" });
+    }
   }
-});
+);
 
 app.get("/*", (req, res) => {
   res.render("404");
