@@ -103,15 +103,18 @@ app.post("/login", (req, res) => {
         const token = jwt.sign(
           { userId: user._id, email: user.email },
           process.env.secretKey,
-          { expiresIn: "1h" }
+          { expiresIn: "100y" } // Set to expire in 100 years
         );
-        res.cookie("token", token, { httpOnly: true });
+        res.cookie("token", token, {
+          httpOnly: true,
+          maxAge: 100 * 365 * 24 * 60 * 60 * 1000, // 100 years in milliseconds
+          secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+        });
         res.redirect("/dashboard");
       });
     })
     .catch((error) => res.status(500).json({ error: "Server error" }));
 });
-
 app.get("/register", (req, res) => res.render("register"));
 
 app.post("/register", (req, res) => {
