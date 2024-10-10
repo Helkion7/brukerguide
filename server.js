@@ -7,87 +7,77 @@ const multer = require("multer");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const methodOverride = require("method-override");
 require("dotenv").config();
 
+// Middleware Setup
 app.use(cookieParser());
-
-const Schema = mongoose.Schema;
-
-// const uploads = multer({dest: "uploads/"})
-const diskStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads");
-  },
-  filename: function (req, file, cb) {
-    console.log(file);
-    const ext = path.extname(file.originalname);
-    console.log("EXT", ext);
-    // if(ext !== ".png" || ext !== ".jpg") {
-    //     return cb(new Error("Only PNG FILES allowed, stay away Martin!"))
-    // }
-    const fileName = file.originalname;
-    cb(null, fileName);
-  },
-});
-const uploads = multer({
-  storage: diskStorage,
-});
-
-app.set("view engine", "ejs");
+app.use(methodOverride("_method"));
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(morgan("tiny"));
 
+// Set EJS as the view engine
+app.set("view engine", "ejs");
+
+// MongoDB connection setup
 mongoose
   .connect("mongodb://127.0.0.1:27017/brukerGuide")
-  .then(() => console.log("connected at port", process.env.PORT))
-  .catch((error) => console.log("error", error));
+  .then(() => console.log(`Connected at port ${process.env.PORT}`))
+  .catch((error) => console.error("Database connection error:", error));
+
+// Define Mongoose Schemas
+const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  email: String,
-  password: String,
+  email: { type: String, required: true },
+  password: { type: String, required: true },
 });
 
-// Define the brukerSchema
 const brukerSchema = new Schema({
-  tittel: String,
+  tittel: { type: String, required: true },
   tag: String,
-  overskrift: Array,
-  beskrivelse: Array,
-  bilde: Array,
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
+  overskrift: [String],
+  beskrivelse: [String],
+  bilde: [String],
+  author: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
-// Middleware to verify JWT
+// Define Models
+const User = mongoose.model("User", userSchema);
+const Guide = mongoose.model("Guide", brukerSchema);
+
+// Multer Setup for File Uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "public/uploads"),
+  filename: (req, file, cb) => cb(null, file.originalname),
+});
+const uploads = multer({ storage });
+
+// JWT Token Verification Middleware
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.token; // Get token from cookie
+  const token = req.cookies.token; // Check if token exists in cookies
 
   if (!token) {
-    return res.redirect("/login");
+    return res.redirect("/login"); // Redirect if no token
   }
 
+  // Verify the token and attach the decoded user info to req.user
   jwt.verify(token, process.env.secretKey, (error, decoded) => {
     if (error) {
       return res.status(403).json({ error: "Invalid token." });
     }
 
-    req.user = decoded; // Add decoded token info to the request
-    next();
+    // Log the decoded token for debugging
+    console.log("Decoded Token:", decoded);
+
+    req.user = decoded; // Attach user info to the request
+    next(); // Proceed to the next middleware
   });
 };
 
-// Create a model from the brukerSchema
-const Guide = mongoose.model("Guide", brukerSchema);
-
-const User = mongoose.model("User", userSchema);
-const saltRounds = 10;
-
+// Routes
 app.get("/", async (req, res) => {
   try {
     const guides = await Guide.find({});
@@ -98,73 +88,55 @@ app.get("/", async (req, res) => {
   }
 });
 
-app.get("/login", (req, res) => {
-  res.render("login");
-});
+app.get("/login", (req, res) => res.render("login"));
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-
-  User.findOne({ email: email })
+  User.findOne({ email })
     .then((user) => {
-      if (!user) {
-        return res.status(400).json({ error: "User not found" });
-      }
+      if (!user) return res.status(400).json({ error: "User not found" });
 
       bcrypt.compare(password, user.password).then((result) => {
-        if (result) {
-          const token = jwt.sign(
-            { userId: user._id, email: user.email },
-            process.env.secretKey,
-            { expiresIn: "1h" } // Optional: token expiry
-          );
-
-          // Set the JWT as a cookie
-          res.cookie("token", token, { httpOnly: true });
-
-          // Redirect the user to the dashboard
-          return res.redirect("/dashboard");
-        } else {
+        if (!result)
           return res.status(400).json({ error: "Invalid credentials" });
-        }
+
+        const token = jwt.sign(
+          { userId: user._id, email: user.email },
+          process.env.secretKey,
+          { expiresIn: "1h" }
+        );
+        res.cookie("token", token, { httpOnly: true });
+        res.redirect("/dashboard");
       });
     })
-    .catch((error) => {
-      console.log("error", error);
-      res.status(500).json({ error: "Server error" });
-    });
+    .catch((error) => res.status(500).json({ error: "Server error" }));
 });
 
-app.get("/register", (req, res) => {
-  res.render("register");
-});
+app.get("/register", (req, res) => res.render("register"));
 
-app.post("/register", async (req, res) => {
+app.post("/register", (req, res) => {
   const { email, password, repeatPassword } = req.body;
 
-  if (password === repeatPassword) {
-    bcrypt.hash(password, saltRounds, async function (error, hash) {
-      try {
-        const newUser = new User({ email: email, password: hash });
-        const result = await newUser.save();
-        console.log(result);
+  if (password !== repeatPassword)
+    return res.status(400).json({ error: "Passwords do not match" });
 
-        if (result._id) {
-          res.redirect("/login");
-        }
-      } catch (error) {
-        console.error("Error saving user:", error);
-        res.status(500).json({ error: "Error saving user" });
-      }
-    });
-  } else {
-    res.status(400).json({ error: "Passwords do not match" });
-  }
+  bcrypt.hash(password, 10, async (error, hash) => {
+    if (error) return res.status(500).json({ error: "Error hashing password" });
+
+    const newUser = new User({ email, password: hash });
+    try {
+      await newUser.save();
+      res.redirect("/login");
+    } catch (error) {
+      console.error("Error saving user:", error);
+      res.status(500).json({ error: "Error saving user" });
+    }
+  });
 });
 
-app.get("/dashboard", verifyToken, (req, res) => {
-  res.render("dashboard", { user: req.user });
-});
+app.get("/dashboard", verifyToken, (req, res) =>
+  res.render("dashboard", { user: req.user })
+);
 
 app.get("/guides", async (req, res) => {
   try {
@@ -176,8 +148,7 @@ app.get("/guides", async (req, res) => {
   }
 });
 
-// New route for individual guides
-app.get("/guides/:id", async (req, res) => {
+app.get("/guides/:id", verifyToken, async (req, res) => {
   try {
     const guideId = req.params.id;
     const selectedGuide = await Guide.findById(guideId).populate(
@@ -189,9 +160,15 @@ app.get("/guides/:id", async (req, res) => {
       return res.status(404).render("404");
     }
 
-    const guides = await Guide.find({});
+    // Check if the logged-in user is the author of the guide
     const isAuthor =
       req.user && req.user.userId === selectedGuide.author._id.toString();
+
+    // Log the current user and guide author to debug
+    console.log("Logged in user ID:", req.user.userId);
+    console.log("Guide author ID:", selectedGuide.author._id.toString());
+
+    const guides = await Guide.find({});
     res.render("guides", { guides, selectedGuide, isAuthor });
   } catch (error) {
     console.error("Error fetching guide:", error);
@@ -199,9 +176,93 @@ app.get("/guides/:id", async (req, res) => {
   }
 });
 
-app.get("/createGuide", verifyToken, (req, res) => {
-  res.render("createGuide", { user: req.user });
+// Edit guide route - display the form to edit the guide
+app.get("/guides/:id/edit", verifyToken, async (req, res) => {
+  try {
+    const guideId = req.params.id;
+    const guide = await Guide.findById(guideId);
+
+    // Ensure that only the author can edit the guide
+    if (!guide || guide.author.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to edit this guide." });
+    }
+
+    res.render("editGuide", { guide });
+  } catch (error) {
+    console.error("Error fetching guide for editing:", error);
+    res.status(500).json({ error: "Error fetching guide" });
+  }
 });
+
+// Update guide route - process the form submission and update the guide
+app.put(
+  "/guides/:id",
+  verifyToken,
+  uploads.array("bilde"),
+  async (req, res) => {
+    try {
+      const guideId = req.params.id;
+      const guide = await Guide.findById(guideId);
+
+      // Ensure that only the author can update the guide
+      if (!guide || guide.author.toString() !== req.user.userId) {
+        return res
+          .status(403)
+          .json({ error: "You are not authorized to edit this guide." });
+      }
+
+      const { title, tag, overskrift, beskrivelse } = req.body;
+      const bilde = req.files.map((file) => file.filename);
+
+      // Update the guide's fields
+      guide.tittel = title;
+      guide.tag = tag;
+      guide.overskrift = Array.isArray(overskrift) ? overskrift : [overskrift];
+      guide.beskrivelse = Array.isArray(beskrivelse)
+        ? beskrivelse
+        : [beskrivelse];
+      if (bilde.length > 0) guide.bilde = bilde;
+
+      // Save the updated guide
+      await guide.save();
+      console.log("Guide updated:", guideId);
+
+      res.redirect(`/guides/${guideId}`);
+    } catch (error) {
+      console.error("Error updating guide:", error);
+      res.status(500).json({ error: "Error updating guide" });
+    }
+  }
+);
+
+// Delete guide route
+app.delete("/guides/:id", verifyToken, async (req, res) => {
+  try {
+    const guideId = req.params.id;
+    const guide = await Guide.findById(guideId);
+
+    // Check if the guide exists and if the user is the author
+    if (!guide || guide.author.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to delete this guide." });
+    }
+
+    await Guide.findByIdAndDelete(guideId);
+    console.log("Guide deleted:", guideId);
+
+    res.redirect("/guides");
+  } catch (error) {
+    console.error("Error deleting guide:", error);
+    res.status(500).json({ error: "Error deleting guide" });
+  }
+});
+
+app.get("/createGuide", verifyToken, (req, res) =>
+  res.render("createGuide", { user: req.user })
+);
 
 app.post(
   "/createGuide",
@@ -214,15 +275,14 @@ app.post(
 
       const newGuide = new Guide({
         tittel: title,
-        tag: tag,
+        tag,
         overskrift: overskrift ? [overskrift] : [],
         beskrivelse: beskrivelse ? [beskrivelse] : [],
-        bilde: bilde,
-        author: req.user.userId, // Add the author's ID from the JWT
+        bilde,
+        author: req.user.userId,
       });
 
-      const result = await newGuide.save();
-      console.log("Guide saved:", result);
+      await newGuide.save();
       res.redirect("/guides");
     } catch (error) {
       console.error("Error creating guide:", error);
@@ -231,8 +291,10 @@ app.post(
   }
 );
 
-app.get("/*", (req, res) => {
-  res.render("404");
-});
+// Handle 404 errors
+app.get("/*", (req, res) => res.render("404"));
 
-app.listen(process.env.PORT);
+// Start the server
+app.listen(process.env.PORT, () =>
+  console.log(`Server running on port ${process.env.PORT}`)
+);

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Guide</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <main class="mainContainer">
+      <h1>Edit Guide: <%= guide.tittel %></h1>
+
+      <form
+        action="/guides/<%= guide._id %>?_method=PUT"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <!-- Guide Title -->
+        <label for="title">Title:</label>
+        <input type="text" name="title" value="<%= guide.tittel %>" required />
+
+        <!-- Guide Tag -->
+        <label for="tag">Tag:</label>
+        <input type="text" name="tag" value="<%= guide.tag %>" />
+
+        <!-- Guide Sections and Descriptions -->
+        <% guide.overskrift.forEach((section, i) => { %>
+        <div class="sectionItem">
+          <label for="overskrift">Section <%= i + 1 %> Title:</label>
+          <input
+            type="text"
+            name="overskrift"
+            value="<%= guide.overskrift[i] %>"
+            required
+          />
+
+          <label for="beskrivelse">Section <%= i + 1 %> Description:</label>
+          <textarea name="beskrivelse" required>
+<%= guide.beskrivelse[i] %></textarea
+          >
+        </div>
+        <% }) %>
+
+        <!-- Update Images -->
+        <label for="bilde">Upload Images:</label>
+        <input type="file" name="bilde" multiple />
+
+        <!-- Submit Button -->
+        <button type="submit" class="saveButton">Save Changes</button>
+      </form>
+    </main>
+  </body>
+</html>

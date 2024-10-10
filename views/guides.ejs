@@ -7,15 +7,16 @@
     <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body>
+    <!-- Include Header -->
     <%- include('partials/header') %>
 
     <div class="gridContainer">
-      <!-- Sidebar with Guide Links -->
+      <!-- Sidebar containing guide links -->
       <div class="aside">
         <div class="sideNav">
           <ul id="sideNavGrid">
-            <% if (guides && guides.length > 0) { %> <% guides.forEach((guide,
-            index) => { %>
+            <% if (guides && guides.length > 0) { %> <% guides.forEach(guide =>
+            { %>
             <li>
               <a href="/guides/<%= guide._id %>"> <%= guide.tittel %> </a>
             </li>
@@ -26,33 +27,18 @@
         </div>
       </div>
 
+      <!-- Main content area -->
       <main class="mainContainer">
         <% if (selectedGuide) { %>
-        <!-- Display individual guide -->
         <div class="guide">
           <h1><%= selectedGuide.tittel %></h1>
           <p><strong>Tag:</strong> <%= selectedGuide.tag %></p>
           <p><strong>Author:</strong> <%= selectedGuide.author.email %></p>
 
-          <% if (isAuthor) { %>
-          <div class="author-actions">
-            <a href="/editGuide/<%= selectedGuide._id %>" class="btn btn-edit"
-              >Edit Guide</a
-            >
-            <form
-              action="/deleteGuide/<%= selectedGuide._id %>"
-              method="POST"
-              onsubmit="return confirm('Are you sure you want to delete this guide?');"
-            >
-              <button type="submit" class="btn btn-delete">Delete Guide</button>
-            </form>
-          </div>
-          <% } %>
-
           <div class="sectionsContainer">
-            <% for (let i = 0; i < selectedGuide.overskrift.length; i++) { %>
+            <% selectedGuide.overskrift.forEach((section, i) => { %>
             <div class="sectionItem">
-              <h2>Section <%= i + 1 %>: <%= selectedGuide.overskrift[i] %></h2>
+              <h2>Section <%= i + 1 %>: <%= section %></h2>
               <p><%= selectedGuide.beskrivelse[i] %></p>
 
               <% if (selectedGuide.bilde[i]) { %>
@@ -63,11 +49,25 @@
               />
               <% } %>
             </div>
-            <% } %>
+            <% }) %>
           </div>
+
+          <!-- Delete Button - Only show if the user is the author -->
+          <% if (isAuthor) { %>
+          <form
+            action="/guides/<%= selectedGuide._id %>?_method=DELETE"
+            method="POST"
+          >
+            <button type="submit" class="deleteButton">Delete Guide</button>
+          </form>
+          <form action="/guides/<%= selectedGuide._id %>/edit" method="GET">
+            <button type="submit" class="editButton">Edit Guide</button>
+          </form>
+          <% } else { %>
+          <p>You are not the author of this guide.</p>
+          <% } %>
         </div>
         <% } else { %>
-        <!-- Display all guides (optional, or you can show a welcome message) -->
         <h1>Welcome to Guides</h1>
         <p>Please select a guide from the sidebar to view its content.</p>
         <% } %>
