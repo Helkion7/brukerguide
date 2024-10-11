@@ -10,6 +10,8 @@ const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
 require("dotenv").config();
 
+const verifyToken = require("./functions/verifyToken.js");
+
 // Middleware Setup
 app.use(cookieParser());
 app.use(methodOverride("_method"));
@@ -56,26 +58,6 @@ const storage = multer.diskStorage({
 const uploads = multer({ storage });
 
 // JWT Token Verification Middleware
-const verifyToken = (req, res, next) => {
-  const token = req.cookies.token; // Check if token exists in cookies
-
-  if (!token) {
-    return res.redirect("/login"); // Redirect if no token
-  }
-
-  // Verify the token and attach the decoded user info to req.user
-  jwt.verify(token, process.env.secretKey, (error, decoded) => {
-    if (error) {
-      return res.status(403).json({ error: "Invalid token." });
-    }
-
-    // Log the decoded token for debugging
-    console.log("Decoded Token:", decoded);
-
-    req.user = decoded; // Attach user info to the request
-    next(); // Proceed to the next middleware
-  });
-};
 
 // Routes
 app.get("/", async (req, res) => {
@@ -129,6 +111,7 @@ app.post("/register", (req, res) => {
     const newUser = new User({ email, password: hash });
     try {
       await newUser.save();
+      console.log(newUser);
       res.redirect("/login");
     } catch (error) {
       console.error("Error saving user:", error);
@@ -247,16 +230,7 @@ app.delete("/guides/:id", verifyToken, async (req, res) => {
     const guide = await Guide.findById(guideId);
 
     // Check if the guide exists and if the user is the author
-    if (!guide || guide.author.toString() !== req.user.userId) {
-      return res
-        .status(403)
-        .json({ error: "You are not authorized to delete this guide." });
-    }
-
-    await Guide.findByIdAndDelete(guideId);
-    console.log("Guide deleted:", guideId);
-
-    res.redirect("/guides");
+    beskrivelse: sanitizedBeskrivelse, res.redirect("/guides");
   } catch (error) {
     console.error("Error deleting guide:", error);
     res.status(500).json({ error: "Error deleting guide" });
@@ -276,11 +250,24 @@ app.post(
       const { title, tag, overskrift, beskrivelse } = req.body;
       const bilde = req.files.map((file) => file.filename);
 
+      // Sanitize and prepare the input data
+      const sanitizedOverskrift = Array.isArray(overskrift)
+        ? overskrift.filter(Boolean)
+        : overskrift
+        ? [overskrift]
+        : [];
+
+      const sanitizedBeskrivelse = Array.isArray(beskrivelse)
+        ? beskrivelse.filter(Boolean)
+        : beskrivelse
+        ? [beskrivelse]
+        : [];
+
       const newGuide = new Guide({
         tittel: title,
         tag,
-        overskrift: overskrift ? [overskrift] : [],
-        beskrivelse: beskrivelse ? [beskrivelse] : [],
+        overskrift: sanitizedOverskrift,
+        beskrivelse: sanitizedBeskrivelse,
         bilde,
         author: req.user.userId,
       });
