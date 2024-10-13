@@ -10,11 +10,11 @@ moreSectionsButton.addEventListener("click", function () {
   newSection.innerHTML = `
     <div>
       <label for="">Overskrift</label>
-      <input type="text" name="overskrift" />
+      <input type="text" name="overskrift" maxlength="100" />
     </div>
     <div>
       <label for="">Beskrivelse</label>
-      <textarea name="beskrivelse" rows="4" required style="width: 100%; padding: 10px; border: 1px solid var(--secondaryColorReverse); border-radius: calc(var(--borderRadius) / 2); background-color: var(--primaryColor); color: var(--secondaryColorReverse); transition: all var(--primaryTransitionSpeed);"></textarea>
+      <textarea name="beskrivelse" rows="4" maxlength="2000" required style="width: 100%; padding: 10px; border: 1px solid var(--secondaryColorReverse); border-radius: calc(var(--borderRadius) / 2); background-color: var(--primaryColor); color: var(--secondaryColorReverse); transition: all var(--primaryTransitionSpeed);"></textarea>
     </div>
     <div>
       <label for="">Bilde</label>

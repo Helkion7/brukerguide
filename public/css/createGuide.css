@@ -1,7 +1,36 @@
+/* Import Google Fonts - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --primaryColor: #3d3d3d;
+  --secondaryColor: #242424;
+  --secondaryColorReverse: #dbdbdb;
+  --primaryTextColor: #fff;
+  --primaryFontFamily: poppins, Helvetica, sans-serif;
+  --borderRadius: 20px;
+  --primaryTransitionSpeed: 0.3s;
+  --primaryBoxShadow: 3px 3px 4px 0px rgba(0, 0, 0, 1);
+  --primaryBoxShadowHover: 0px 0px 8px 7px rgba(128, 128, 128, 1);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: var(--primaryFontFamily);
+}
+
+body {
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+  line-height: 1.6;
+}
+
+/* Create Guide Form Styles */
 #createGuide {
   max-width: 800px;
-  margin: 40px auto;
-  padding: 30px;
+  margin: 2rem auto;
+  padding: 2rem;
   background-color: var(--secondaryColor);
   border-radius: var(--borderRadius);
   box-shadow: var(--primaryBoxShadow);
@@ -10,41 +39,22 @@
 .createGuideForm {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
 }
 
-.createGuideForm > div {
+.createGuideForm div {
   display: flex;
   flex-direction: column;
 }
 
 .createGuideForm label {
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
   color: var(--secondaryColorReverse);
-  margin-bottom: 5px;
-  font-weight: bold;
 }
 
 .createGuideForm input[type="text"],
-.createGuideForm input[type="file"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--secondaryColorReverse);
-  border-radius: calc(var(--borderRadius) / 2);
-  background-color: var(--primaryColor);
-  color: var(--secondaryColorReverse);
-  transition: all var(--primaryTransitionSpeed);
-}
-
-.createGuideForm input[type="text"]:focus,
-.createGuideForm input[type="file"]:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--secondaryColorReverse);
-}
-
-.createGuideForm input[type="file"] {
-  padding: 5px;
-}
-
 .createGuideForm textarea {
   width: 100%;
   padding: 10px;
@@ -52,99 +62,120 @@
   border-radius: calc(var(--borderRadius) / 2);
   background-color: var(--primaryColor);
   color: var(--secondaryColorReverse);
+  font-family: var(--primaryFontFamily);
   transition: all var(--primaryTransitionSpeed);
 }
 
+.createGuideForm input[type="text"]:focus,
 .createGuideForm textarea:focus {
   outline: none;
   box-shadow: 0 0 0 2px var(--secondaryColorReverse);
 }
 
-.createGuideForm input[type="file"]::file-selector-button {
-  padding: 5px 10px;
-  background-color: var(--secondaryColorReverse);
-  color: var(--secondaryColor);
-  border: none;
-  border-radius: calc(var(--borderRadius) / 4);
-  cursor: pointer;
-  transition: all var(--primaryTransitionSpeed);
+.section {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  margin-bottom: 1.5rem;
 }
 
-.createGuideForm input[type="file"]::file-selector-button:hover {
-  background-color: var(--primaryColor);
-  color: var(--secondaryColorReverse);
+#dropArea {
+  border: 2px dashed var(--secondaryColorReverse);
+  margin-top: 2rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--primaryTransitionSpeed);
+}
+
+#dropArea:hover,
+#dropArea.dragging {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 #imageDisplay {
-  max-width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  box-shadow: none;
-  border-radius: var(--borderRadius);
+  max-width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: calc(var(--borderRadius) / 2);
 }
 
-#moreSections > div {
+button {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: var(--secondaryColor);
+  color: var(--secondaryColorReverse);
   border: 1px solid var(--secondaryColorReverse);
   border-radius: var(--borderRadius);
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-button,
-input {
-  padding: 10px 20px;
-  background-color: var(--secondaryColorReverse);
-  color: var(--secondaryColor);
-  border: none;
-  border-radius: calc(var(--borderRadius) / 2);
   cursor: pointer;
   font-weight: bold;
   transition: all var(--primaryTransitionSpeed);
-  align-self: flex-start;
 }
 
-button:hover,
-input:hover {
-  background-color: var(--primaryColor);
-  color: var(--secondaryColorReverse);
+button:hover {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  box-shadow: var(--primaryBoxShadow);
 }
 
-#op {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
+#submitContainer {
+  margin-top: 1rem;
 }
 
-#beskrivelse {
+input[type="submit"] {
   width: 100%;
-  padding: 10px;
-  border: 1px solid var(--secondaryColorReverse);
-  border-radius: calc(var(--borderRadius) / 2);
+  padding: 10px 15px;
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  border: none;
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  font-weight: bold;
+  transition: all var(--primaryTransitionSpeed);
+}
+
+input[type="submit"]:hover {
   background-color: var(--primaryColor);
   color: var(--secondaryColorReverse);
-  transition: all var(--primaryTransitionSpeed);
-  resize: none;
+  box-shadow: var(--primaryBoxShadow);
 }
 
-.newSection {
-  opacity: 0; /* Start invisible */
-  transform: translateY(-20px); /* Start slightly above */
-  transition: opacity var(--primaryTransitionSpeed),
-    transform var(--primaryTransitionSpeed);
-  margin-bottom: 20px; /* Space between sections */
-}
-
-.newSection.visible {
-  opacity: 1; /* Fade in */
-  transform: translateY(0); /* Slide down */
-}
-
-@media (max-width: 600px) {
+/* Responsive styles */
+@media screen and (max-width: 768px) {
   #createGuide {
-    padding: 20px;
-    margin: 20px;
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .createGuideForm input[type="text"],
+  .createGuideForm textarea {
+    font-size: 16px; /* Prevent zoom on mobile */
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  #dropArea {
+    padding: 1.5rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #createGuide {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+
+  .createGuideForm {
+    gap: 1rem;
+  }
+
+  .section {
+    padding: 0.75rem;
+  }
+
+  #dropArea {
+    padding: 1rem;
   }
 }

@@ -5,51 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Guide</title>
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/editGuide.css" />
   </head>
   <body>
     <%- include('partials/header') %>
 
-    <main class="mainContainer">
-      <h1>Edit Guide: <%= guide.tittel %></h1>
+    <div class="editGuideContainer">
+      <h1 class="editGuideTitle">Edit Guide: <%= guide.tittel %></h1>
 
       <form
         action="/guides/<%= guide._id %>?_method=PUT"
         method="POST"
         enctype="multipart/form-data"
+        class="editGuideForm"
       >
         <!-- Guide Title -->
-        <label for="title">Title:</label>
-        <input type="text" name="title" value="<%= guide.tittel %>" required />
-
-        <!-- Guide Tag -->
-        <label for="tag">Tag:</label>
-        <input type="text" name="tag" value="<%= guide.tag %>" />
-
-        <!-- Guide Sections and Descriptions -->
-        <% guide.overskrift.forEach((section, i) => { %>
-        <div class="sectionItem">
-          <label for="overskrift">Section <%= i + 1 %> Title:</label>
+        <div class="formGroup">
+          <label for="title" class="formLabel">Title:</label>
           <input
             type="text"
-            name="overskrift"
-            value="<%= guide.overskrift[i] %>"
+            id="title"
+            name="title"
+            value="<%= guide.tittel %>"
             required
+            class="formInput"
+            maxlength="100"
           />
-
-          <label for="beskrivelse">Section <%= i + 1 %> Description:</label>
-          <textarea name="beskrivelse" required>
-<%= guide.beskrivelse[i] %></textarea
-          >
         </div>
-        <% }) %>
 
-        <!-- Update Images -->
-        <label for="bilde">Upload Images:</label>
-        <input type="file" name="bilde" multiple />
+        <!-- Guide Tag -->
+        <div class="formGroup">
+          <label for="tag" class="formLabel">Tag:</label>
+          <input
+            type="text"
+            id="tag"
+            name="tag"
+            value="<%= guide.tag %>"
+            class="formInput"
+            maxlength="30"
+          />
+        </div>
+
+        <!-- Guide Sections and Descriptions -->
+        <div id="sectionsContainer">
+          <% guide.overskrift.forEach((section, i) => { %>
+          <div class="sectionItem">
+            <div class="formGroup">
+              <label for="overskrift<%= i %>" class="formLabel"
+                >Section <%= i + 1 %> Title:</label
+              >
+              <input
+                type="text"
+                id="overskrift<%= i %>"
+                name="overskrift"
+                value="<%= guide.overskrift[i] %>"
+                required
+                class="formInput"
+                maxlength="100"
+              />
+            </div>
+
+            <div class="formGroup">
+              <label for="beskrivelse<%= i %>" class="formLabel"
+                >Section <%= i + 1 %> Description:</label
+              >
+              <textarea
+                id="beskrivelse<%= i %>"
+                name="beskrivelse"
+                required
+                class="formTextarea"
+                maxlength="2000"
+              >
+<%= guide.beskrivelse[i] %></textarea
+              >
+            </div>
+
+            <div class="dropArea" data-index="<%= i %>">
+              <label for="bilde<%= i %>" class="formLabel">Image:</label>
+              <input
+                type="file"
+                id="bilde<%= i %>"
+                name="bilde"
+                accept="image/png, image/jpeg"
+                class="fileInput"
+                style="display: none"
+              />
+              <img
+                class="imageDisplay"
+                src="<%= guide.bilde[i] ? '/uploads/' + guide.bilde[i] : '' %>"
+                alt="Section image"
+                style="max-width: 100%; <%= guide.bilde[i] ? '' : 'display: none;' %>"
+              />
+              <p class="dropText">
+                Drag and drop an image here, or click to select a file
+              </p>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+
+        <!-- Add Section Button -->
+        <div class="formGroup">
+          <button type="button" class="addSectionButton" onclick="addSection()">
+            Add Section
+          </button>
+        </div>
 
         <!-- Submit Button -->
         <button type="submit" class="saveButton">Save Changes</button>
       </form>
-    </main>
+    </div>
+
+    <script src="/js/editGuide.js"></script>
   </body>
 </html>

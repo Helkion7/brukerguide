@@ -1,0 +1,139 @@
+:root {
+  --primaryColor: #3d3d3d;
+  --secondaryColor: #242424;
+  --secondaryColorReverse: #dbdbdb;
+  --primaryTextColor: #fff;
+  --primaryFontFamily: "Poppins", Helvetica, sans-serif;
+  --borderRadius: 20px;
+  --primaryTransitionSpeed: 0.3s;
+  --primaryBoxShadow: 3px 3px 4px 0px rgba(0, 0, 0, 1);
+  --primaryBoxShadowHover: 0px 0px 8px 7px rgba(128, 128, 128, 1);
+}
+
+body {
+  font-family: var(--primaryFontFamily);
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+  margin: 0;
+  padding: 0;
+}
+
+.editGuideContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.editGuideTitle {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.editGuideForm {
+  background-color: var(--secondaryColor);
+  border-radius: var(--borderRadius);
+  padding: 30px;
+  box-shadow: var(--primaryBoxShadow);
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formLabel {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+}
+
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--secondaryColorReverse);
+  border-radius: var(--borderRadius);
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+  font-family: var(--primaryFontFamily);
+  font-size: 1rem;
+}
+
+.formTextarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.sectionItem {
+  background-color: var(--primaryColor);
+  border-radius: var(--borderRadius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.saveButton {
+  background-color: #4caf50;
+  color: var(--primaryTextColor);
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all var(--primaryTransitionSpeed);
+}
+
+.saveButton:hover {
+  background-color: #45a049;
+  box-shadow: var(--primaryBoxShadowHover);
+}
+
+.dropArea {
+    border: 2px dashed var(--secondaryColorReverse);
+    border-radius: var(--borderRadius);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .dropArea:hover {
+    background-color: var(--primaryColor);
+  }
+  
+  .imageDisplay {
+    max-width: 100%;
+    border-radius: var(--borderRadius);
+    margin-top: 10px;
+  }
+  
+  .addSectionButton {
+    background-color: var(--secondaryColorReverse);
+    color: var(--secondaryColor);
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--borderRadius);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all var(--primaryTransitionSpeed);
+    margin-bottom: 20px;
+  }
+  
+  .addSectionButton:hover {
+    background-color: var(--primaryTextColor);
+    box-shadow: var(--primaryBoxShadowHover);
+  }
+
+@media (max-width: 768px) {
+  .editGuideTitle {
+    font-size: 2rem;
+  }
+
+  .editGuideForm {
+    padding: 20px;
+  }
+
+  .addSectionButton {
+    width: 100%;
+  }
+}
+}
+

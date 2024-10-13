@@ -3,13 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
   </head>
   <body>
     <%- include('partials/header') %>
 
-    <h1>your welcome</h1>
-    <a href="/createGuide">Create Guide</a>
+    <div class="dashboardContainer">
+      <h1 class="dashboardTitle">Welcome to Your Dashboard</h1>
+      <a href="/createGuide" class="createGuideButton">Create New Guide</a>
+
+      <h2 class="guideListTitle">Your Guides</h2>
+      <div class="guideList">
+        <% if (guides && guides.length > 0) { %> <% guides.forEach(guide => { %>
+        <div class="guideItem">
+          <h3 class="guideTitle"><%= guide.tittel %></h3>
+          <p class="guideTag"><strong>Tag:</strong> <%= guide.tag %></p>
+          <div class="guideActions">
+            <a href="/guides/<%= guide._id %>" class="actionButton viewButton"
+              >View</a
+            >
+            <a
+              href="/guides/<%= guide._id %>/edit"
+              class="actionButton editButton"
+              >Edit</a
+            >
+            <form
+              action="/guides/<%= guide._id %>?_method=DELETE"
+              method="POST"
+              style="display: inline"
+            >
+              <button type="submit" class="actionButton deleteButton">
+                Delete
+              </button>
+            </form>
+          </div>
+        </div>
+        <% }) %> <% } else { %>
+        <p>You haven't created any guides yet.</p>
+        <% } %>
+      </div>
+    </div>
   </body>
 </html>

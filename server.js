@@ -120,9 +120,16 @@ app.post("/register", (req, res) => {
   });
 });
 
-app.get("/dashboard", verifyToken, (req, res) =>
-  res.render("dashboard", { user: req.user })
-);
+app.get("/dashboard", verifyToken, async (req, res) => {
+  try {
+    // Fetch guides created by the logged-in user
+    const userGuides = await Guide.find({ author: req.user.userId });
+    res.render("dashboard", { user: req.user, guides: userGuides });
+  } catch (error) {
+    console.error("Error fetching user guides:", error);
+    res.status(500).json({ error: "Error fetching user guides" });
+  }
+});
 
 app.get("/guides", async (req, res) => {
   try {

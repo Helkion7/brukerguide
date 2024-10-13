@@ -171,6 +171,7 @@ main {
 }
 
 .guideCardContent {
+  width: 300px;
   padding: 20px;
   background-color: var(--secondary-color);
   border-radius: var(--border-radius);

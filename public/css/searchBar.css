@@ -1,0 +1,52 @@
+/* Search Bar Styles */
+#search.contentSection {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+#myInput {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: var(--secondaryColor);
+  color: var(--secondaryColorReverse);
+  border: 2px solid var(--secondaryColorReverse);
+  border-radius: var(--borderRadius);
+  transition: all var(--primaryTransitionSpeed);
+}
+
+#myInput::placeholder {
+  color: var(--secondaryColorReverse);
+  opacity: 0.7;
+}
+
+#myInput:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(219, 219, 219, 0.3);
+  border-color: var(--secondaryColorReverse);
+}
+
+/* Add a search icon */
+#search.contentSection {
+  position: relative;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  #search.contentSection {
+    max-width: 90%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #myInput {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  #search.contentSection::after {
+    right: 16px;
+    font-size: 16px;
+  }
+}

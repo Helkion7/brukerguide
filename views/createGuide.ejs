@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create guide</title>
 
-    <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/createGuide.css" />
   </head>
   <body>
@@ -20,11 +19,11 @@
       >
         <div>
           <label for="title">Title</label>
-          <input type="text" name="title" id="title" required />
+          <input type="text" name="title" id="title" maxlength="100" required />
         </div>
         <div>
           <label for="tag">Tag</label>
-          <input type="text" name="tag" id="tag" required />
+          <input type="text" name="tag" id="tag" maxlength="30" required />
         </div>
 
         <!-- Section Fields -->
@@ -32,21 +31,33 @@
           <div class="section">
             <div>
               <label for="overskrift">Overskrift</label>
-              <input type="text" name="overskrift" required />
+              <input type="text" name="overskrift" maxlength="100" required />
             </div>
             <div>
               <label for="beskrivelse">Beskrivelse</label>
-              <textarea name="beskrivelse" rows="4" required></textarea>
+              <textarea
+                name="beskrivelse"
+                rows="4"
+                maxlength="2000"
+                required
+              ></textarea>
             </div>
-            <div>
+            <div id="dropArea" style="border: 2px dashed #ccc; padding: 20px">
               <label for="bilde">Bilde</label>
-              <input type="file" name="bilde" accept="image/png, image/jpeg" />
+              <input
+                type="file"
+                id="fileInput"
+                name="bilde"
+                accept="image/png, image/jpeg"
+                style="display: none"
+              />
               <img
                 id="imageDisplay"
                 src=""
                 alt="Selected image"
                 style="max-width: 100%; display: none"
               />
+              <p>Drag and drop an image here, or click to select a file</p>
             </div>
           </div>
         </div>
@@ -61,59 +72,6 @@
         </div>
       </form>
     </section>
-
-    <script>
-      document.addEventListener("change", function (event) {
-        if (event.target && event.target.name === "bilde") {
-          const fileInput = event.target;
-          const imageDisplay = fileInput.nextElementSibling;
-
-          if (fileInput.files && fileInput.files[0]) {
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-              imageDisplay.src = e.target.result;
-              imageDisplay.style.display = "block"; // Show the image
-            };
-
-            reader.readAsDataURL(fileInput.files[0]);
-          } else {
-            imageDisplay.style.display = "none"; // Hide the image if no file is selected
-          }
-        }
-      });
-    </script>
-    <script>
-      // Function to dynamically add more sections
-      function addSection() {
-        const container = document.getElementById("sectionsContainer");
-        const sectionHTML = `
-          <div class="section">
-            <div>
-              <label for="overskrift">Overskrift</label>
-              <input type="text" name="overskrift" required />
-            </div>
-            <div>
-              <label for="beskrivelse">Beskrivelse</label>
-              <textarea name="beskrivelse" rows="4" required></textarea>
-            </div>
-            <div>
-              <label for="bilde">Bilde</label>
-              <input
-                type="file"
-                name="bilde"
-                accept="image/png, image/jpeg"
-              />
-              <img
-                id="imageDisplay"
-                src=""
-                alt="Selected image"
-                style="max-width: 100%; display: none"
-              />
-            </div>
-          </div>`;
-        container.insertAdjacentHTML("beforeend", sectionHTML);
-      }
-    </script>
+    <script src="/js/createGuide.js"></script>
   </body>
 </html>

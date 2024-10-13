@@ -1,0 +1,118 @@
+body {
+  font-family: var(--primaryFontFamily);
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+  margin: 0;
+  padding: 0;
+}
+
+.dashboardContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.dashboardTitle {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.createGuideButton {
+  display: inline-block;
+  background-color: var(--secondaryColor);
+  color: var(--primaryTextColor);
+  padding: 10px 20px;
+  border-radius: var(--borderRadius);
+  text-decoration: none;
+  transition: all var(--primaryTransitionSpeed);
+  box-shadow: var(--primaryBoxShadow);
+  margin-bottom: 30px;
+}
+
+.createGuideButton:hover {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  box-shadow: var(--primaryBoxShadowHover);
+}
+
+.guideListTitle {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.guideList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.guideItem {
+  background-color: var(--secondaryColor);
+  border-radius: var(--borderRadius);
+  padding: 20px;
+  box-shadow: var(--primaryBoxShadow);
+  transition: all var(--primaryTransitionSpeed);
+}
+
+.guideItem:hover {
+  box-shadow: var(--primaryBoxShadowHover);
+}
+
+.guideTitle {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.guideTag {
+  font-size: 1rem;
+  color: var(--secondaryColorReverse);
+  margin-bottom: 15px;
+}
+
+.guideActions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.actionButton {
+  padding: 5px 10px;
+  border-radius: var(--borderRadius);
+  text-decoration: none;
+  transition: all var(--primaryTransitionSpeed);
+  font-size: 0.9rem;
+}
+
+.viewButton {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+}
+
+.editButton {
+  background-color: #4caf50;
+  color: var(--primaryTextColor);
+}
+
+.deleteButton {
+  background-color: #f44336;
+  color: var(--primaryTextColor);
+  border: none;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .dashboardTitle {
+    font-size: 2rem;
+  }
+
+  .guideListTitle {
+    font-size: 1.5rem;
+  }
+
+  .guideList {
+    grid-template-columns: 1fr;
+  }
+}
