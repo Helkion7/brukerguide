@@ -14,37 +14,71 @@ document.addEventListener("DOMContentLoaded", function () {
     const imageDisplay = dropArea.querySelector(".imageDisplay");
     const dropText = dropArea.querySelector(".dropText");
 
-    dropArea.addEventListener("click", () => fileInput.click());
-    dropArea.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      dropArea.style.borderColor = "#45a049";
+    // Prevent default behaviors for drag and drop events
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
     });
-    dropArea.addEventListener("dragleave", () => {
-      dropArea.style.borderColor = "#ccc";
+
+    // Highlight the drop area when dragging over it
+    ["dragenter", "dragover"].forEach((eventName) => {
+      dropArea.addEventListener(
+        eventName,
+        () => dropArea.classList.add("highlight"),
+        false
+      );
     });
+
+    // Remove highlight when dragging leaves the drop area
+    ["dragleave", "drop"].forEach((eventName) => {
+      dropArea.addEventListener(
+        eventName,
+        () => dropArea.classList.remove("highlight"),
+        false
+      );
+    });
+
+    // Handle the file drop
     dropArea.addEventListener("drop", (e) => {
       e.preventDefault();
-      dropArea.style.borderColor = "#ccc";
-      const file = e.dataTransfer.files[0];
-      handleFile(file, imageDisplay, dropText);
+      dropArea.classList.remove("highlight");
+      const dt = e.dataTransfer;
+      const file = dt.files[0];
+      handleFile(file, fileInput, imageDisplay);
     });
+
+    // Open file picker when clicking on the drop area
+    dropArea.addEventListener("click", () => fileInput.click());
 
     fileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      handleFile(file, imageDisplay, dropText);
+      handleFile(file, fileInput, imageDisplay);
     });
   }
 
-  function handleFile(file, imageDisplay, dropText) {
-    if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        imageDisplay.src = e.target.result;
-        imageDisplay.style.display = "block";
-        dropText.style.display = "none";
-      };
-      reader.readAsDataURL(file);
+  function handleFile(file, fileInput, imageDisplay) {
+    const validImageTypes = ["image/jpeg", "image/png"];
+    if (!validImageTypes.includes(file.type)) {
+      alert("Please upload a valid image (JPEG or PNG)");
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imageDisplay.src = e.target.result;
+      imageDisplay.style.display = "block";
+      const dropText = imageDisplay.nextElementSibling; // Get the drop text element
+      dropText.style.display = "none"; // Hide the drop text
+    };
+    reader.readAsDataURL(file);
+
+    // Set file to input and trigger change event
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+
+    // Trigger file input change event manually
+    const event = new Event("change", { bubbles: true });
+    fileInput.dispatchEvent(event);
   }
 
   window.addSection = function () {
@@ -74,4 +108,9 @@ document.addEventListener("DOMContentLoaded", function () {
     sectionsContainer.appendChild(newSection);
     setupDropArea(newSection.querySelector(".dropArea"));
   };
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 });

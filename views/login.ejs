@@ -14,13 +14,21 @@
         <div class="loginContainer">
           <form class="login" action="" method="post">
             <h2>Login</h2>
-            <input type="email" name="email" id="email" placeholder="Email" />
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Email"
+              required
+            />
             <input
               type="password"
               name="password"
               id="password"
               placeholder="Password"
+              required
             />
+            <div id="errorBox"></div>
             <input type="submit" value="Log In" />
           </form>
           <p class="userChange">
@@ -29,5 +37,11 @@
         </div>
       </section>
     </div>
+    <script src="/js/login.js"></script>
   </body>
+  <style>
+    #errorBox {
+      color: white;
+    }
+  </style>
 </html>

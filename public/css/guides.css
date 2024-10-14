@@ -1,0 +1,174 @@
+/* Import Google Fonts - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --primaryColor: #3d3d3d;
+  --secondaryColor: #242424;
+  --secondaryColorReverse: #dbdbdb;
+  --primaryTextColor: #fff;
+  --primaryFontFamily: "Poppins", Helvetica, sans-serif;
+  --borderRadius: 20px;
+  --primaryTransitionSpeed: 0.3s;
+  --primaryBoxShadow: 3px 3px 4px 0px rgba(0, 0, 0, 1);
+  --primaryBoxShadowHover: 0px 0px 8px 7px rgba(128, 128, 128, 1);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: var(--primaryFontFamily);
+}
+
+body {
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+  line-height: 1.6;
+}
+
+/* Grid Container Styles */
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr 3fr; /* Sidebar and Main content */
+  grid-template-rows: auto; /* Dynamic height based on content */
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Sidebar Styles */
+.aside {
+  background-color: var(--secondaryColorReverse);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--primaryBoxShadow);
+  padding: 20px;
+}
+
+#sideNavGrid {
+  list-style-type: none;
+  padding: 0; /* Remove default padding */
+}
+
+#sideNavGrid li {
+  margin: 10px 0;
+  color: black;
+}
+
+#sideNavGrid a {
+  display: block; /* Make the entire link area clickable */
+  padding: 10px 15px; /* Add padding for button-like appearance */
+  text-decoration: none;
+  color: var(--primaryTextColor);
+  background-color: var(--primaryColor); /* Button background */
+  border-radius: var(--borderRadius);
+  transition: background-color var(--primaryTransitionSpeed),
+    transform var(--primaryTransitionSpeed);
+}
+
+#sideNavGrid a:hover {
+  background-color: var(
+    --secondaryColorReverse
+  ); /* Change background on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+/* Main Content Styles */
+.mainContainer {
+  background-color: var(--secondaryColor);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--primaryBoxShadow);
+  padding: 20px;
+}
+
+.guide {
+  margin-bottom: 20px;
+}
+
+h1,
+h2 {
+  margin-bottom: 10px;
+}
+
+.sectionItem {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: var(--borderRadius);
+  margin-bottom: 1.5rem;
+  transition: box-shadow var(--primaryTransitionSpeed);
+}
+
+.sectionItem:hover {
+  box-shadow: var(--primaryBoxShadowHover);
+}
+
+.sectionImage {
+  max-width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: calc(var(--borderRadius) / 2);
+}
+
+/* Button Styles */
+button {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: var(--secondaryColor);
+  color: var(--secondaryColorReverse);
+  border: 1px solid var(--secondaryColorReverse);
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  font-weight: bold;
+  transition: all var(--primaryTransitionSpeed);
+  margin-top: 10px; /* Space between buttons */
+}
+
+button:hover {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  box-shadow: var(--primaryBoxShadow);
+}
+
+#ifNoGuidesWelcome {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  .gridContainer {
+    grid-template-columns: 1fr; /* Stack the sidebar and main content */
+  }
+
+  .aside {
+    margin-bottom: 20px; /* Space between sidebar and main content */
+  }
+
+  .sectionItem {
+    padding: 1rem;
+  }
+
+  button {
+    font-size: 16px; /* Prevent zoom on mobile */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .gridContainer {
+    padding: 10px; /* Reduce padding for small screens */
+  }
+
+  .aside {
+    padding: 10px; /* Reduce padding for small screens */
+  }
+
+  .mainContainer {
+    padding: 10px; /* Reduce padding for small screens */
+  }
+
+  .sectionItem {
+    padding: 0.75rem; /* Smaller padding for smaller screens */
+  }
+
+  button {
+    padding: 8px 10px; /* Smaller button size for smaller screens */
+  }
+}
