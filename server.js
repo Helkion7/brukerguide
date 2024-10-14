@@ -124,26 +124,35 @@ app.post("/logout", (req, res) => {
 
 app.get("/register", (req, res) => res.render("register", { user: req.user }));
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { email, password, repeatPassword } = req.body;
 
-  if (password !== repeatPassword)
-    return res.status(400).json({ error: "Passwords do not match" });
+  if (password !== repeatPassword) {
+    document.getElementById("errorBox").innerHTML =
+      "The passwords do not match!";
+    return false;
+  } else {
+    document.getElementById("errorBox").innerHTML = ""; // Clear the error if passwords match
+    return true;
+  }
 
-  bcrypt.hash(password, 10, async (error, hash) => {
-    if (error) return res.status(500).json({ error: "Error hashing password" });
-
-    const newUser = new User({ email, password: hash });
-    try {
-      await newUser.save();
-      res.redirect("/login");
-    } catch (error) {
-      console.error("Error saving user:", error);
-      res.status(500).json({ error: "Error saving user" });
+  try {
+    // Check if a user with the given email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already in use" });
     }
-  });
-});
 
+    // If email is not in use, proceed with user creation
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ email, password: hashedPassword });
+    await newUser.save();
+    res.redirect("/login");
+  } catch (error) {
+    console.error("Error during registration:", error);
+    res.status(500).json({ error: "Error during registration" });
+  }
+});
 app.get("/dashboard", verifyToken, async (req, res) => {
   try {
     const userGuides = await Guide.find({ author: req.user.userId });
