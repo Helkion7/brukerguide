@@ -127,17 +127,13 @@ app.get("/register", (req, res) => res.render("register", { user: req.user }));
 app.post("/register", async (req, res) => {
   const { email, password, repeatPassword } = req.body;
 
-  if (password !== repeatPassword) {
-    document.getElementById("errorBox").innerHTML =
-      "The passwords do not match!";
-    return false;
-  } else {
-    document.getElementById("errorBox").innerHTML = ""; // Clear the error if passwords match
-    return true;
-  }
-
   try {
-    // Check if a user with the given email already exists
+    // Check if passwords match
+    if (password !== repeatPassword) {
+      return res.status(400).json({ error: "Passwords do not match" });
+    }
+
+    // Check if email is already in use
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email already in use" });
@@ -147,7 +143,7 @@ app.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
-    res.redirect("/login");
+    res.status(200).json({ message: "Registration successful" });
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ error: "Error during registration" });

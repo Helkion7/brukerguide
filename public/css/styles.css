@@ -47,7 +47,6 @@ nav {
   display: flex;
   align-items: center;
   color: white;
-  margin-right: 50px;
 }
 
 #header li:first-child {
@@ -182,11 +181,27 @@ main {
   color: #fff;
 }
 
-#guideCards :hover {
+#guideCards a {
+  display: block; /* Ensures the anchor takes up the full space of the card */
+  text-decoration: none; /* Removes the underline from the link */
+}
+
+#guideCards a:hover .guideCardContent {
   transform: scale(1.1);
   color: var(--primary-color);
   background-color: var(--secondary-color-reverse);
   box-shadow: var(--box-shadow-hover);
+  border-radius: var(--border-radius);
+}
+
+.guideTitle,
+.guideTag {
+  transition: color 0.3s ease; /* Smooth color transition */
+}
+
+#guideCards a:hover .guideTitle,
+#guideCards a:hover .guideTag {
+  color: inherit; /* Prevents text color from changing on hover */
 }
 
 /* Grid layout */
@@ -347,6 +362,70 @@ main {
 .login input[type="submit"]:hover {
   background-color: var(--primary-color);
   color: var(--secondary-color-reverse);
+}
+
+.register h2 {
+  color: var(--secondary-color-reverse);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.register input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--secondary-color-reverse);
+  border-radius: calc(var(--border-radius) / 2);
+  background-color: var(--primary-color);
+  color: var(--secondary-color-reverse);
+  transition: all var(--transition-speed);
+}
+
+.register input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--secondary-color-reverse);
+}
+
+.register input::placeholder {
+  color: var(--secondary-color-reverse);
+  opacity: 0.7;
+}
+
+.register input[type="submit"] {
+  background-color: var(--secondary-color-reverse);
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.register input[type="submit"]:hover {
+  background-color: var(--primary-color);
+  color: var(--secondary-color-reverse);
+}
+
+#errorBox {
+  display: none;
+  background-color: var(--secondary-color);
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: var(--border-radius);
+  padding: 10px;
+  margin: 15px 0;
+  font-weight: bold;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(-10px);
+}
+
+#errorBox.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#errorBox:hover {
+  background-color: #ff0019;
 }
 
 .userChange {

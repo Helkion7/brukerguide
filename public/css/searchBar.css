@@ -1,64 +1,57 @@
-/* Search Bar Styles */
-#search.contentSection {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+:root {
+  --primary-color: #3d3d3d;
+  --secondary-color: #242424;
+  --secondary-color-reverse: #dbdbdb;
+  --primary-text-color: #fff;
+  --primary-font-family: "Poppins", Helvetica, sans-serif;
+  --border-radius: 20px;
+  --transition-speed: 0.3s;
+  --box-shadow: 3px 3px 4px 0px rgba(0, 0, 0, 1);
+  --box-shadow-hover: 0px 0px 8px 7px rgba(128, 128, 128, 1);
 }
 
+/* General styling for the search section */
+.contentSection {
+  display: flex;
+  justify-content: center; /* Center the search bar */
+  margin: 20px; /* Add some margin around the section */
+}
+
+/* Styling for the input field */
 #myInput {
-  width: 100%;
-  padding: 12px 20px;
-  font-size: 16px;
-  background-color: var(--secondaryColor);
-  color: var(--secondaryColorReverse);
-  border: 2px solid var(--secondaryColorReverse);
-  border-radius: var(--borderRadius);
-  transition: all var(--primaryTransitionSpeed);
+  width: 100%; /* Full width for responsiveness */
+  max-width: 400px; /* Set a max width */
+  padding: 10px; /* Add padding */
+  border: 2px solid var(--secondary-color); /* Use the secondary color for border */
+  border-radius: var(--border-radius); /* Use the defined border radius */
+  font-size: 16px; /* Font size */
+  font-family: var(--primary-font-family); /* Use the defined font family */
+  color: var(--primary-text-color); /* Text color */
+  background-color: var(--primary-color); /* Background color */
+  transition: border-color var(--transition-speed) ease,
+    box-shadow var(--transition-speed) ease; /* Transition effects */
 }
 
-#myInput::placeholder {
-  color: var(--secondaryColorReverse);
-  opacity: 0.7;
+/* Hover effect */
+#myInput:hover {
+  border-color: var(
+    --secondary-color-reverse
+  ); /* Change border color on hover */
+  box-shadow: var(--box-shadow-hover); /* Add shadow on hover */
 }
 
+/* Focus effect */
 #myInput:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(219, 219, 219, 0.3);
-  border-color: var(--secondaryColorReverse);
+  border-color: var(
+    --secondary-color-reverse
+  ); /* Change border color on focus */
+  box-shadow: var(--box-shadow); /* Shadow on focus */
+  outline: none; /* Remove default outline */
 }
 
-/* Add a search icon */
-#search.contentSection {
-  position: relative;
-}
-
-#search.contentSection::after {
-  content: "\1F50D"; /* Unicode for a magnifying glass */
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  font-size: 18px;
-  color: var(--secondaryColorReverse);
-  opacity: 0.7;
-  pointer-events: none; /* Ensures the icon doesn't interfere with input */
-}
-
-/* Responsive styles */
-@media screen and (max-width: 768px) {
-  #search.contentSection {
-    max-width: 90%;
-  }
-}
-
-@media screen and (max-width: 480px) {
+/* Responsive adjustments */
+@media (max-width: 600px) {
   #myInput {
-    font-size: 14px;
-    padding: 10px 16px;
-  }
-
-  #search.contentSection::after {
-    right: 16px;
-    font-size: 16px;
+    font-size: 14px; /* Smaller font on smaller screens */
   }
 }
