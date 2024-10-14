@@ -1,3 +1,18 @@
+/* dashboardStyles.css */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
+:root {
+  --primaryColor: #3d3d3d;
+  --secondaryColor: #242424;
+  --secondaryColorReverse: #dbdbdb;
+  --primaryTextColor: #fff;
+  --primaryFontFamily: "Poppins", Helvetica, sans-serif;
+  --borderRadius: 20px;
+  --primaryTransitionSpeed: 0.3s;
+  --primaryBoxShadow: 3px 3px 4px 0px rgba(0, 0, 0, 1);
+  --primaryBoxShadowHover: 0px 0px 8px 7px rgba(128, 128, 128, 1);
+}
+
 body {
   font-family: var(--primaryFontFamily);
   background-color: var(--primaryColor);

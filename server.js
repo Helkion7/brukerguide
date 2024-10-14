@@ -10,8 +10,6 @@ const cookieParser = require("cookie-parser");
 const methodOverride = require("method-override");
 require("dotenv").config();
 
-const verifyToken = require("./functions/verifyToken.js");
-
 // Middleware Setup
 app.use(cookieParser());
 app.use(methodOverride("_method"));
@@ -42,7 +40,7 @@ const brukerSchema = new Schema({
   tag: String,
   overskrift: [String],
   beskrivelse: [String],
-  bilde: [String],
+  bilde: Array,
   author: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
 
@@ -58,19 +56,40 @@ const storage = multer.diskStorage({
 const uploads = multer({ storage });
 
 // JWT Token Verification Middleware
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    req.user = null;
+    return next();
+  }
+
+  jwt.verify(token, process.env.secretKey, (error, decoded) => {
+    if (error) {
+      req.user = null;
+      return next();
+    }
+
+    req.user = decoded;
+    next();
+  });
+};
+
+// Apply verifyToken middleware to all routes
+app.use(verifyToken);
 
 // Routes
 app.get("/", async (req, res) => {
   try {
     const guides = await Guide.find({});
-    res.render("index", { guides });
+    res.render("index", { guides, user: req.user });
   } catch (error) {
     console.error("Error fetching guides:", error);
     res.status(500).json({ error: "Error fetching guides" });
   }
 });
 
-app.get("/login", (req, res) => res.render("login"));
+app.get("/login", (req, res) => res.render("login", { user: req.user }));
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -85,19 +104,25 @@ app.post("/login", (req, res) => {
         const token = jwt.sign(
           { userId: user._id, email: user.email },
           process.env.secretKey,
-          { expiresIn: "100y" } // Set to expire in 100 years
+          { expiresIn: "100y" }
         );
         res.cookie("token", token, {
           httpOnly: true,
-          maxAge: 100 * 365 * 24 * 60 * 60 * 1000, // 100 years in milliseconds
-          secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+          maxAge: 100 * 365 * 24 * 60 * 60 * 1000,
+          secure: process.env.NODE_ENV === "production",
         });
         res.redirect("/dashboard");
       });
     })
     .catch((error) => res.status(500).json({ error: "Server error" }));
 });
-app.get("/register", (req, res) => res.render("register"));
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.redirect("/");
+});
+
+app.get("/register", (req, res) => res.render("register", { user: req.user }));
 
 app.post("/register", (req, res) => {
   const { email, password, repeatPassword } = req.body;
@@ -111,7 +136,6 @@ app.post("/register", (req, res) => {
     const newUser = new User({ email, password: hash });
     try {
       await newUser.save();
-      console.log(newUser);
       res.redirect("/login");
     } catch (error) {
       console.error("Error saving user:", error);
@@ -122,7 +146,6 @@ app.post("/register", (req, res) => {
 
 app.get("/dashboard", verifyToken, async (req, res) => {
   try {
-    // Fetch guides created by the logged-in user
     const userGuides = await Guide.find({ author: req.user.userId });
     res.render("dashboard", { user: req.user, guides: userGuides });
   } catch (error) {
@@ -134,7 +157,7 @@ app.get("/dashboard", verifyToken, async (req, res) => {
 app.get("/guides", async (req, res) => {
   try {
     const guides = await Guide.find({});
-    res.render("guides", { guides, selectedGuide: null });
+    res.render("guides", { guides, selectedGuide: null, user: req.user });
   } catch (error) {
     console.error("Error fetching guides:", error);
     res.status(500).json({ error: "Error fetching guides" });
@@ -148,48 +171,47 @@ app.get("/guides/:id", verifyToken, async (req, res) => {
       "author",
       "email"
     );
+    console.log(selectedGuide);
 
     if (!selectedGuide) {
-      return res.status(404).render("404");
+      return res.status(404).render("404", { user: req.user });
     }
 
-    // Check if the logged-in user is the author of the guide
     const isAuthor =
       req.user && req.user.userId === selectedGuide.author._id.toString();
 
-    // Log the current user and guide author to debug
-    console.log("Logged in user ID:", req.user.userId);
+    console.log(
+      "Logged in user ID:",
+      req.user ? req.user.userId : "Not logged in"
+    );
     console.log("Guide author ID:", selectedGuide.author._id.toString());
 
     const guides = await Guide.find({});
-    res.render("guides", { guides, selectedGuide, isAuthor });
+    res.render("guides", { guides, selectedGuide, isAuthor, user: req.user });
   } catch (error) {
     console.error("Error fetching guide:", error);
     res.status(500).json({ error: "Error fetching guide" });
   }
 });
 
-// Edit guide route - display the form to edit the guide
 app.get("/guides/:id/edit", verifyToken, async (req, res) => {
   try {
     const guideId = req.params.id;
     const guide = await Guide.findById(guideId);
 
-    // Ensure that only the author can edit the guide
     if (!guide || guide.author.toString() !== req.user.userId) {
       return res
         .status(403)
         .json({ error: "You are not authorized to edit this guide." });
     }
 
-    res.render("editGuide", { guide });
+    res.render("editGuide", { guide, user: req.user });
   } catch (error) {
     console.error("Error fetching guide for editing:", error);
     res.status(500).json({ error: "Error fetching guide" });
   }
 });
 
-// Update guide route - process the form submission and update the guide
 app.put(
   "/guides/:id",
   verifyToken,
@@ -199,7 +221,6 @@ app.put(
       const guideId = req.params.id;
       const guide = await Guide.findById(guideId);
 
-      // Ensure that only the author can update the guide
       if (!guide || guide.author.toString() !== req.user.userId) {
         return res
           .status(403)
@@ -207,21 +228,18 @@ app.put(
       }
 
       const { title, tag, overskrift, beskrivelse } = req.body;
-      const bilde = req.files.map((file) => file.filename);
 
-      // Update the guide's fields
       guide.tittel = title;
       guide.tag = tag;
       guide.overskrift = Array.isArray(overskrift) ? overskrift : [overskrift];
       guide.beskrivelse = Array.isArray(beskrivelse)
         ? beskrivelse
         : [beskrivelse];
-      if (bilde.length > 0) guide.bilde = bilde;
 
-      // Save the updated guide
+      guide.bilde = req.files;
+
       await guide.save();
       console.log("Guide updated:", guideId);
-
       res.redirect(`/guides/${guideId}`);
     } catch (error) {
       console.error("Error updating guide:", error);
@@ -230,54 +248,67 @@ app.put(
   }
 );
 
-// Delete guide route
 app.delete("/guides/:id", verifyToken, async (req, res) => {
   try {
     const guideId = req.params.id;
     const guide = await Guide.findById(guideId);
 
-    // Check if the guide exists and if the user is the author
-    beskrivelse: sanitizedBeskrivelse, res.redirect("/guides");
+    if (!guide || guide.author.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to delete this guide." });
+    }
+
+    await Guide.findByIdAndDelete(guideId);
+    console.log("Guide deleted:", guideId);
+
+    res.redirect("/guides");
   } catch (error) {
     console.error("Error deleting guide:", error);
     res.status(500).json({ error: "Error deleting guide" });
   }
 });
 
-app.get("/createGuide", verifyToken, (req, res) =>
-  res.render("createGuide", { user: req.user })
-);
+app.get("/createGuide", verifyToken, (req, res) => {
+  if (!req.user) {
+    return res.redirect("/login");
+  }
+  res.render("createGuide", { user: req.user });
+});
 
 app.post(
   "/createGuide",
   verifyToken,
   uploads.array("bilde"),
   async (req, res) => {
+    if (!req.user) {
+      return res
+        .status(403)
+        .json({ error: "You must be logged in to create a guide." });
+    }
+
     try {
       const { title, tag, overskrift, beskrivelse } = req.body;
       const bilde = req.files.map((file) => file.filename);
+      console.log(req.files, "REQ.FILES");
 
-      // Sanitize and prepare the input data
-      const sanitizedOverskrift = Array.isArray(overskrift)
-        ? overskrift.filter(Boolean)
-        : overskrift
-        ? [overskrift]
-        : [];
-
-      const sanitizedBeskrivelse = Array.isArray(beskrivelse)
-        ? beskrivelse.filter(Boolean)
-        : beskrivelse
-        ? [beskrivelse]
-        : [];
+      const overskriftArray = Array.isArray(overskrift)
+        ? overskrift
+        : [overskrift];
+      const beskrivelseArray = Array.isArray(beskrivelse)
+        ? beskrivelse
+        : [beskrivelse];
 
       const newGuide = new Guide({
         tittel: title,
         tag,
-        overskrift: sanitizedOverskrift,
-        beskrivelse: sanitizedBeskrivelse,
-        bilde,
+        overskrift: overskriftArray,
+        beskrivelse: beskrivelseArray,
+        bilde: req.files,
         author: req.user.userId,
       });
+
+      console.log("New Guide:", newGuide);
 
       await newGuide.save();
       res.redirect("/guides");
@@ -289,7 +320,7 @@ app.post(
 );
 
 // Handle 404 errors
-app.get("/*", (req, res) => res.render("404"));
+app.get("/*", (req, res) => res.render("404", { user: req.user }));
 
 // Start the server
 app.listen(process.env.PORT, () =>

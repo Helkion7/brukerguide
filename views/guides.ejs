@@ -44,7 +44,7 @@
 
               <% if (selectedGuide.bilde[i]) { %>
               <img
-                src="/uploads/<%= selectedGuide.bilde[i] %>"
+                src="/<%= selectedGuide.bilde[i].path.slice(7)%>"
                 alt="Section Image"
                 class="sectionImage"
               />

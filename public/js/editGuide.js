@@ -52,25 +52,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const newSection = document.createElement("div");
     newSection.className = "sectionItem";
     newSection.innerHTML = `
-        <div class="formGroup">
-          <label for="overskrift${sectionIndex}" class="formLabel">Section ${
+      <div class="formGroup">
+        <label for="overskrift${sectionIndex}" class="formLabel">Section ${
       sectionIndex + 1
     } Title:</label>
-          <input type="text" id="overskrift${sectionIndex}" name="overskrift" required class="formInput" maxlength="100" />
-        </div>
-        <div class="formGroup">
-          <label for="beskrivelse${sectionIndex}" class="formLabel">Section ${
+        <input type="text" id="overskrift${sectionIndex}" name="overskrift" required class="formInput" maxlength="100" />
+      </div>
+      <div class="formGroup">
+        <label for="beskrivelse${sectionIndex}" class="formLabel">Section ${
       sectionIndex + 1
     } Description:</label>
-          <textarea id="beskrivelse${sectionIndex}" name="beskrivelse" required class="formTextarea" maxlength="2000"></textarea>
-        </div>
-        <div class="dropArea" data-index="${sectionIndex}">
-          <label for="bilde${sectionIndex}" class="formLabel">Image:</label>
-          <input type="file" id="bilde${sectionIndex}" name="bilde" accept="image/png, image/jpeg" class="fileInput" style="display: none" />
-          <img class="imageDisplay" src="" alt="Section image" style="max-width: 100%; display: none;" />
-          <p class="dropText">Drag and drop an image here, or click to select a file</p>
-        </div>
-      `;
+        <textarea id="beskrivelse${sectionIndex}" name="beskrivelse" required class="formTextarea" maxlength="2000"></textarea>
+      </div>
+      <div class="dropArea" data-index="${sectionIndex}">
+        <label for="bilde${sectionIndex}" class="formLabel">Image:</label>
+        <input type="file" id="bilde${sectionIndex}" name="bilde" accept="image/png, image/jpeg" class="fileInput" style="display: none" />
+        <img class="imageDisplay" src="" alt="Section image" style="max-width: 100%; display: none;" />
+        <p class="dropText">Drag and drop an image here, or click to select a file</p>
+      </div>
+    `;
     sectionsContainer.appendChild(newSection);
     setupDropArea(newSection.querySelector(".dropArea"));
   };

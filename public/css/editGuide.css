@@ -87,40 +87,40 @@ body {
 }
 
 .dropArea {
-    border: 2px dashed var(--secondaryColorReverse);
-    border-radius: var(--borderRadius);
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .dropArea:hover {
-    background-color: var(--primaryColor);
-  }
-  
-  .imageDisplay {
-    max-width: 100%;
-    border-radius: var(--borderRadius);
-    margin-top: 10px;
-  }
-  
-  .addSectionButton {
-    background-color: var(--secondaryColorReverse);
-    color: var(--secondaryColor);
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--borderRadius);
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: all var(--primaryTransitionSpeed);
-    margin-bottom: 20px;
-  }
-  
-  .addSectionButton:hover {
-    background-color: var(--primaryTextColor);
-    box-shadow: var(--primaryBoxShadowHover);
-  }
+  border: 2px dashed var(--secondaryColorReverse);
+  border-radius: var(--borderRadius);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.dropArea:hover {
+  background-color: var(--primaryColor);
+}
+
+.imageDisplay {
+  max-width: 100%;
+  border-radius: var(--borderRadius);
+  margin-top: 10px;
+}
+
+.addSectionButton {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all var(--primaryTransitionSpeed);
+  margin-bottom: 20px;
+}
+
+.addSectionButton:hover {
+  background-color: var(--primaryTextColor);
+  box-shadow: var(--primaryBoxShadowHover);
+}
 
 @media (max-width: 768px) {
   .editGuideTitle {
@@ -135,5 +135,3 @@ body {
     width: 100%;
   }
 }
-}
-

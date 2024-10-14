@@ -90,9 +90,10 @@
                 class="fileInput"
                 style="display: none"
               />
+
               <img
                 class="imageDisplay"
-                src="<%= guide.bilde[i] ? '/uploads/' + guide.bilde[i] : '' %>"
+                src="<%= guide.bilde[i] ? '/' + guide.bilde[i].path.slice(7) : '' %>"
                 alt="Section image"
                 style="max-width: 100%; <%= guide.bilde[i] ? '' : 'display: none;' %>"
               />

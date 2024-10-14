@@ -32,6 +32,18 @@
   position: relative;
 }
 
+#search.contentSection::after {
+  content: "\1F50D"; /* Unicode for a magnifying glass */
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--secondaryColorReverse);
+  opacity: 0.7;
+  pointer-events: none; /* Ensures the icon doesn't interfere with input */
+}
+
 /* Responsive styles */
 @media screen and (max-width: 768px) {
   #search.contentSection {
