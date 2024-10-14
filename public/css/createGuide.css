@@ -179,3 +179,7 @@ input[type="submit"]:hover {
     padding: 1rem;
   }
 }
+/* Highlight effect for the drop area */
+#dropArea.highlight {
+  border-color: green;
+}

@@ -1,157 +1,186 @@
+// Handle drag and drop functionality
 const dropArea = document.getElementById("dropArea");
 const fileInput = document.getElementById("fileInput");
 const imageDisplay = document.getElementById("imageDisplay");
 
-// Function to handle file selection and display
+// Prevent default behaviors for drag and drop events
+["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+  dropArea.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+// Highlight the drop area when dragging over it
+["dragenter", "dragover"].forEach((eventName) => {
+  dropArea.addEventListener(
+    eventName,
+    () => dropArea.classList.add("highlight"),
+    false
+  );
+});
+
+// Remove highlight when dragging leaves the drop area
+["dragleave", "drop"].forEach((eventName) => {
+  dropArea.addEventListener(
+    eventName,
+    () => dropArea.classList.remove("highlight"),
+    false
+  );
+});
+
+// Handle the file drop
+dropArea.addEventListener("drop", handleDrop, false);
+
+function handleDrop(e) {
+  const dt = e.dataTransfer;
+  const file = dt.files[0];
+  handleFile(file);
+}
+
+// Open file picker when clicking on the drop area
+dropArea.addEventListener("click", () => fileInput.click());
+
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  handleFile(file);
+});
+
+// Function to handle the selected file and display the preview
 function handleFile(file) {
+  const validImageTypes = ["image/jpeg", "image/png"];
+  if (!validImageTypes.includes(file.type)) {
+    alert("Please upload a valid image (JPEG or PNG)");
+    return;
+  }
+
   const reader = new FileReader();
-  reader.onload = function (event) {
-    imageDisplay.src = event.target.result;
+  reader.onload = (e) => {
+    imageDisplay.src = e.target.result;
     imageDisplay.style.display = "block";
   };
   reader.readAsDataURL(file);
+
+  // Set file to input and trigger change event
+  const dataTransfer = new DataTransfer();
+  dataTransfer.items.add(file);
+  fileInput.files = dataTransfer.files;
+
+  // Trigger file input change event manually
+  const event = new Event("change", { bubbles: true });
+  fileInput.dispatchEvent(event);
 }
 
-// Click to open file input dialog
-dropArea.addEventListener("click", () => {
-  fileInput.click();
-});
-
-// Handle file input change
-fileInput.addEventListener("change", (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    handleFile(file);
-  }
-});
-
-// Drag over events
-dropArea.addEventListener("dragover", (event) => {
-  event.preventDefault();
-  dropArea.classList.add("dragging");
-});
-
-// Drag leave event
-dropArea.addEventListener("dragleave", () => {
-  dropArea.classList.remove("dragging");
-});
-
-// Drop event
-dropArea.addEventListener("drop", (event) => {
-  event.preventDefault();
-  dropArea.classList.remove("dragging");
-
-  const file = event.dataTransfer.files[0];
-  if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
-    handleFile(file);
-  }
-});
-
-// Function to dynamically add more sections
+// Function to add a new section dynamically
 function addSection() {
-  const container = document.getElementById("sectionsContainer");
+  const sectionsContainer = document.getElementById("sectionsContainer");
 
-  const sectionHTML = `
-      <div class="section">
-        <div>
-          <label for="overskrift">Overskrift</label>
-          <input type="text" name="overskrift" required />
-        </div>
-        <div>
-          <label for="beskrivelse">Beskrivelse</label>
-          <textarea name="beskrivelse" rows="4" required></textarea>
-        </div>
-        <div>
-          <label for="bilde">Bilde</label>
-          <div class="dropArea" style="border: 2px dashed #ccc; padding: 20px;">
-            <input
-              type="file"
-              class="fileInput"
-              name="bilde"
-              accept="image/png, image/jpeg"
-              style="display: none;"
-            />
-            <img
-              class="imageDisplay"
-              src=""
-              alt="Selected image"
-              style="max-width: 100%; display: none;"
-            />
-            <p>Drag and drop an image here, or click to select a file</p>
-          </div>
-        </div>
-      </div>`;
+  // Create a new section div
+  const section = document.createElement("div");
+  section.classList.add("section");
 
-  container.insertAdjacentHTML("beforeend", sectionHTML);
+  // Create "Overskrift" input
+  const overskriftDiv = document.createElement("div");
+  const overskriftLabel = document.createElement("label");
+  overskriftLabel.setAttribute("for", "overskrift");
+  overskriftLabel.innerText = "Overskrift";
+  const overskriftInput = document.createElement("input");
+  overskriftInput.type = "text";
+  overskriftInput.name = "overskrift";
+  overskriftInput.maxLength = 100;
+  overskriftInput.required = true;
+  overskriftDiv.appendChild(overskriftLabel);
+  overskriftDiv.appendChild(overskriftInput);
 
-  // Select the last added section's elements
-  const newSection = container.lastElementChild;
-  const dropArea = newSection.querySelector(".dropArea");
-  const fileInput = newSection.querySelector(".fileInput");
-  const imageDisplay = newSection.querySelector(".imageDisplay");
+  // Create "Beskrivelse" textarea
+  const beskrivelseDiv = document.createElement("div");
+  const beskrivelseLabel = document.createElement("label");
+  beskrivelseLabel.setAttribute("for", "beskrivelse");
+  beskrivelseLabel.innerText = "Beskrivelse";
+  const beskrivelseTextarea = document.createElement("textarea");
+  beskrivelseTextarea.name = "beskrivelse";
+  beskrivelseTextarea.rows = 4;
+  beskrivelseTextarea.maxLength = 2000;
+  beskrivelseTextarea.required = true;
+  beskrivelseDiv.appendChild(beskrivelseLabel);
+  beskrivelseDiv.appendChild(beskrivelseTextarea);
 
-  // Function to handle file selection and display
-  function handleFile(file) {
+  // Create "Bilde" input and drop area
+  const dropAreaDiv = document.createElement("div");
+  dropAreaDiv.classList.add("drop-area");
+  dropAreaDiv.style.border = "2px dashed #ccc";
+  dropAreaDiv.style.padding = "20px";
+
+  const bildeLabel = document.createElement("label");
+  bildeLabel.innerText = "Bilde";
+
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.name = "bilde";
+  fileInput.accept = "image/png, image/jpeg";
+  fileInput.style.display = "none";
+
+  const imageDisplay = document.createElement("img");
+  imageDisplay.style.maxWidth = "100%";
+  imageDisplay.style.display = "none";
+
+  const dropAreaText = document.createElement("p");
+  dropAreaText.innerText =
+    "Drag and drop an image here, or click to select a file";
+
+  dropAreaDiv.appendChild(bildeLabel);
+  dropAreaDiv.appendChild(fileInput);
+  dropAreaDiv.appendChild(imageDisplay);
+  dropAreaDiv.appendChild(dropAreaText);
+
+  // Handle click on the drop area to open file picker
+  dropAreaDiv.addEventListener("click", () => fileInput.click());
+
+  // Add drag-and-drop functionality (similar to previous logic)
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    dropAreaDiv.addEventListener(eventName, preventDefaults, false);
+  });
+
+  dropAreaDiv.addEventListener("drop", (e) => {
+    const dt = e.dataTransfer;
+    const file = dt.files[0];
+    handleFile(file, fileInput, imageDisplay);
+  });
+
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    handleFile(file, fileInput, imageDisplay);
+  });
+
+  function handleFile(file, input, image) {
+    const validImageTypes = ["image/jpeg", "image/png"];
+    if (!validImageTypes.includes(file.type)) {
+      alert("Please upload a valid image (JPEG or PNG)");
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onload = function (event) {
-      imageDisplay.src = event.target.result;
-      imageDisplay.style.display = "block";
+    reader.onload = (e) => {
+      image.src = e.target.result;
+      image.style.display = "block";
     };
     reader.readAsDataURL(file);
+    input.files = [file];
   }
 
-  // Click to open file input dialog
-  dropArea.addEventListener("click", () => {
-    fileInput.click();
-  });
+  // Append all the elements to the section div
+  section.appendChild(overskriftDiv);
+  section.appendChild(beskrivelseDiv);
+  section.appendChild(dropAreaDiv);
 
-  // Handle file input change
-  fileInput.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      handleFile(file);
-    }
-  });
-
-  // Drag over events
-  dropArea.addEventListener("dragover", (event) => {
-    event.preventDefault();
-    dropArea.classList.add("dragging");
-  });
-
-  // Drag leave event
-  dropArea.addEventListener("dragleave", () => {
-    dropArea.classList.remove("dragging");
-  });
-
-  // Drop event
-  dropArea.addEventListener("drop", (event) => {
-    event.preventDefault();
-    dropArea.classList.remove("dragging");
-
-    const file = event.dataTransfer.files[0];
-    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
-      handleFile(file);
-    }
-  });
+  // Add the new section to the container
+  sectionsContainer.appendChild(section);
 }
 
-document.addEventListener("change", function (event) {
-  if (event.target && event.target.name === "bilde") {
-    const fileInput = event.target;
-    const imageDisplay = fileInput.nextElementSibling;
-
-    if (fileInput.files && fileInput.files[0]) {
-      const reader = new FileReader();
-
-      reader.onload = function (e) {
-        imageDisplay.src = e.target.result;
-        imageDisplay.style.display = "block"; // Show the image
-      };
-
-      reader.readAsDataURL(fileInput.files[0]);
-    } else {
-      imageDisplay.style.display = "none"; // Hide the image if no file is selected
-    }
-  }
-});
+// Prevent default drag and drop behavior
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
