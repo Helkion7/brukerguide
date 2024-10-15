@@ -111,10 +111,14 @@ app.post("/login", (req, res) => {
           maxAge: 100 * 365 * 24 * 60 * 60 * 1000,
           secure: process.env.NODE_ENV === "production",
         });
-        res.redirect("/dashboard");
+        // Send a JSON response with success flag
+        res.status(200).json({ success: true, message: "Login successful" });
       });
     })
-    .catch((error) => res.status(500).json({ error: "Server error" }));
+    .catch((error) => {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Server error: " + error.message });
+    });
 });
 
 app.post("/logout", (req, res) => {

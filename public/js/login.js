@@ -1,28 +1,42 @@
-form.onsubmit = async function (e) {
-  e.preventDefault();
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector(".login");
+  const errorBox = document.getElementById("errorBox");
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  form.onsubmit = async function (e) {
+    e.preventDefault();
 
-  try {
-    const response = await fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    const data = await response.json();
+    // Clear previous error messages
+    errorBox.innerHTML = "";
+    errorBox.classList.remove("show");
 
-    if (!response.ok) {
-      showError(data.error);
-    } else {
-      // Login successful, redirect to dashboard
-      window.location.href = "/dashboard";
+    try {
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        console.log("Login successful, redirecting to dashboard");
+        window.location.href = "/dashboard";
+      } else {
+        showError(data.error || "An unexpected error occurred during login.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showError("An unexpected error occurred. Please try again.");
     }
-  } catch (error) {
-    console.error("Error:", error);
-    showError("An unexpected error occurred. Please try again.");
+  };
+
+  function showError(message) {
+    errorBox.innerHTML = message;
+    errorBox.classList.add("show");
   }
-};
+});
