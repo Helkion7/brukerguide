@@ -12,19 +12,33 @@
     <%- include('partials/header') %>
 
     <div class="gridContainer">
-      <!-- Sidebar containing guide links -->
+      <!-- Sidebar containing guide links and sections -->
       <div class="aside">
         <div class="sideNav">
           <ul id="sideNavGrid">
             <% if (guides && guides.length > 0) { %> <% guides.forEach(guide =>
             { %>
             <li>
-              <a href="/guides/<%= guide._id %>"> <%= guide.tittel %> </a>
+              <a href="/guides/<%= guide._id %>"><%= guide.tittel %></a>
             </li>
             <% }) %> <% } else { %>
             <li>No guides available.</li>
             <% } %>
           </ul>
+
+          <!-- Add section navigation for the selected guide -->
+          <% if (selectedGuide) { %>
+          <h3>Sections</h3>
+          <ul id="sectionNav">
+            <% selectedGuide.overskrift.forEach((section, index) => { %>
+            <li>
+              <a href="#section<%= index + 1 %>" class="section-link"
+                ><%= section %></a
+              >
+            </li>
+            <% }) %>
+          </ul>
+          <% } %>
         </div>
       </div>
 
@@ -38,7 +52,7 @@
 
           <div class="sectionsContainer">
             <% selectedGuide.overskrift.forEach((section, i) => { %>
-            <div class="sectionItem">
+            <div id="section<%= i + 1 %>" class="sectionItem">
               <h2>Section <%= i + 1 %>: <%= section %></h2>
               <p><%= selectedGuide.beskrivelse[i] %></p>
 
@@ -73,9 +87,29 @@
           <h1>Welcome to Guides</h1>
           <p>Please select a guide from the sidebar to view its content.</p>
         </div>
-
         <% } %>
       </main>
     </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const sectionLinks = document.querySelectorAll(".section-link");
+
+        sectionLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute("href");
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+              targetElement.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }
+          });
+        });
+      });
+    </script>
   </body>
 </html>

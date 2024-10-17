@@ -48,11 +48,18 @@ const brukerSchema = new Schema({
 const User = mongoose.model("User", userSchema);
 const Guide = mongoose.model("Guide", brukerSchema);
 
-// Multer Setup for File Uploads
+// Multer Setup for File Uploads with filename sanitization
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "public/uploads"),
-  filename: (req, file, cb) => cb(null, file.originalname),
+  filename: (req, file, cb) => {
+    // Sanitize filename: replace spaces with underscores and remove any non-alphanumeric characters except underscores and hyphens
+    const sanitizedName = file.originalname
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9_.-]/g, "");
+    cb(null, Date.now() + "-" + sanitizedName);
+  },
 });
+
 const uploads = multer({ storage });
 
 // JWT Token Verification Middleware
@@ -153,6 +160,7 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ error: "Error during registration" });
   }
 });
+
 app.get("/dashboard", verifyToken, async (req, res) => {
   try {
     const userGuides = await Guide.find({ author: req.user.userId });

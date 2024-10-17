@@ -172,3 +172,31 @@ button:hover {
     padding: 8px 10px; /* Smaller button size for smaller screens */
   }
 }
+
+#sectionNav {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+#sectionNav li {
+  margin: 5px 0;
+}
+
+#sectionNav a {
+  display: block;
+  padding: 5px 10px;
+  text-decoration: none;
+  color: var(--primaryTextColor);
+  background-color: var(--secondaryColor);
+  border-radius: var(--borderRadius);
+  font-size: 0.9em;
+  transition: background-color var(--primaryTransitionSpeed),
+    transform var(--primaryTransitionSpeed);
+}
+
+#sectionNav a:hover {
+  background-color: var(--secondaryColorReverse);
+  color: var(--secondaryColor);
+  transform: scale(1.05);
+}
