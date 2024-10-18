@@ -37,3 +37,4 @@ jobs:
           if pm2 list | grep -qE "errored|stopped"; then
             echo "One or more processes have errored or stopped"
             exit 1
+          fi
