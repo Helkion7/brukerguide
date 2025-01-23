@@ -24,8 +24,8 @@ app.set("view engine", "ejs");
 
 // MongoDB connection setup
 mongoose
-  .connect("mongodb://127.0.0.1:27017/brukerGuide") // Connect to MongoDB database
-  .then(() => console.log(`Connected at port ${process.env.PORT}`))
+  .connect(process.env.MONGODB_URI) // Use environment variable instead of hardcoded URL
+  .then(() => console.log(`Connected to MongoDB Atlas`))
   .catch((error) => console.error("Database connection error:", error));
 
 // Define Mongoose Schemas for database structure
@@ -119,13 +119,13 @@ app.post("/login", (req, res) => {
         const token = jwt.sign(
           { userId: user._id, email: user.email },
           process.env.secretKey,
-          { expiresIn: "100y" } // Set token expiration to 100 years
+          { expiresIn: "100y" }
         );
 
         // Set the token as a secure HTTP-only cookie
         res.cookie("token", token, {
           httpOnly: true,
-          maxAge: 100 * 365 * 24 * 60 * 60 * 1000, // Token valid for 100 years
+          maxAge: 100 * 365 * 24 * 60 * 60 * 1000,
           secure: process.env.NODE_ENV === "production", // Secure in production
         });
 
@@ -236,34 +236,39 @@ app.get("/guides/:id/edit", verifyToken, async (req, res) => {
 });
 
 // Update guide route: Handle guide updates
-app.put("/guides/:id", verifyToken, uploads.array("bilde"), async (req, res) => {
-  try {
-    const guideId = req.params.id;
-    const guide = await Guide.findById(guideId);
+app.put(
+  "/guides/:id",
+  verifyToken,
+  uploads.array("bilde"),
+  async (req, res) => {
+    try {
+      const guideId = req.params.id;
+      const guide = await Guide.findById(guideId);
 
-    if (!guide || guide.author.toString() !== req.user.userId) {
-      return res
-        .status(403)
-        .json({ error: "You are not authorized to edit this guide." });
+      if (!guide || guide.author.toString() !== req.user.userId) {
+        return res
+          .status(403)
+          .json({ error: "You are not authorized to edit this guide." });
+      }
+
+      const { title, tag, overskrift, beskrivelse } = req.body;
+
+      guide.tittel = title; // Update title
+      guide.tag = tag; // Update tag
+      guide.overskrift = Array.isArray(overskrift) ? overskrift : [overskrift]; // Update subtitles
+      guide.beskrivelse = Array.isArray(beskrivelse)
+        ? beskrivelse
+        : [beskrivelse]; // Update descriptions
+      guide.bilde = req.files; // Update uploaded images
+
+      await guide.save(); // Save changes to the database
+      res.redirect(`/guides/${guideId}`); // Redirect to the updated guide's page
+    } catch (error) {
+      console.error("Error updating guide:", error);
+      res.status(500).json({ error: "Error updating guide" });
     }
-
-    const { title, tag, overskrift, beskrivelse } = req.body;
-
-    guide.tittel = title; // Update title
-    guide.tag = tag; // Update tag
-    guide.overskrift = Array.isArray(overskrift) ? overskrift : [overskrift]; // Update subtitles
-    guide.beskrivelse = Array.isArray(beskrivelse)
-      ? beskrivelse
-      : [beskrivelse]; // Update descriptions
-    guide.bilde = req.files; // Update uploaded images
-
-    await guide.save(); // Save changes to the database
-    res.redirect(`/guides/${guideId}`); // Redirect to the updated guide's page
-  } catch (error) {
-    console.error("Error updating guide:", error);
-    res.status(500).json({ error: "Error updating guide" });
   }
-});
+);
 
 // Delete guide route: Remove a guide by ID
 app.delete("/guides/:id", verifyToken, async (req, res) => {
@@ -294,33 +299,38 @@ app.get("/createGuide", verifyToken, (req, res) => {
 });
 
 // Create guide POST route: Handle guide creation
-app.post("/createGuide", verifyToken, uploads.array("bilde"), async (req, res) => {
-  if (!req.user) {
-    return res
-      .status(403)
-      .json({ error: "You must be logged in to create a guide." });
+app.post(
+  "/createGuide",
+  verifyToken,
+  uploads.array("bilde"),
+  async (req, res) => {
+    if (!req.user) {
+      return res
+        .status(403)
+        .json({ error: "You must be logged in to create a guide." });
+    }
+
+    try {
+      const { title, tag, overskrift, beskrivelse } = req.body;
+      const bilde = req.files.map((file) => file.filename); // Get uploaded file names
+
+      const newGuide = new Guide({
+        tittel: title,
+        tag,
+        overskrift: Array.isArray(overskrift) ? overskrift : [overskrift],
+        beskrivelse: Array.isArray(beskrivelse) ? beskrivelse : [beskrivelse],
+        bilde: req.files,
+        author: req.user.userId,
+      });
+
+      await newGuide.save(); // Save the new guide to the database
+      res.redirect("/guides"); // Redirect to the guides list
+    } catch (error) {
+      console.error("Error creating guide:", error);
+      res.status(500).json({ error: "Error creating guide" });
+    }
   }
-
-  try {
-    const { title, tag, overskrift, beskrivelse } = req.body;
-    const bilde = req.files.map((file) => file.filename); // Get uploaded file names
-
-    const newGuide = new Guide({
-      tittel: title,
-      tag,
-      overskrift: Array.isArray(overskrift) ? overskrift : [overskrift],
-      beskrivelse: Array.isArray(beskrivelse) ? beskrivelse : [beskrivelse],
-      bilde: req.files,
-      author: req.user.userId,
-    });
-
-    await newGuide.save(); // Save the new guide to the database
-    res.redirect("/guides"); // Redirect to the guides list
-  } catch (error) {
-    console.error("Error creating guide:", error);
-    res.status(500).json({ error: "Error creating guide" });
-  }
-});
+);
 
 // 404 Error handling route: Render custom 404 page for unmatched routes
 app.get("/*", (req, res) => res.render("404", { user: req.user }));
